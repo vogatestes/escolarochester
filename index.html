@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nome do Curso — Programa Educacional Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#12162A;
+  --ink-2:#1B2040;
+  --paper:#F7F4EC;
+  --paper-2:#EDE7D6;
+  --gold:#B8912B;
+  --gold-soft:#D9BC6E;
+  --teal:#1F5F5B;
+  --teal-dark:#12403D;
+  --text:#22263D;
+  --muted:#666B80;
+  --line:rgba(18,22,42,0.13);
+  --line-strong:rgba(18,22,42,0.22);
+  --radius-sm:8px;
+  --radius:16px;
+  --radius-lg:26px;
+  --shadow:0 20px 50px -25px rgba(18,22,42,0.35);
+  --font-display:'Fraunces', serif;
+  --font-body:'Inter', sans-serif;
+  --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  color:var(--text);
+  background:var(--paper);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;color:var(--ink);}
+p{margin:0;}
+.container{max-width:1180px;margin:0 auto;padding:0 24px;}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--teal-dark);
+  display:inline-flex;align-items:center;gap:8px;
+  font-weight:500;
+}
+.eyebrow::before{content:'';width:18px;height:1px;background:var(--teal-dark);display:inline-block;}
+.section{padding:110px 0;}
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head h2{font-size:clamp(28px,3.4vw,42px);font-weight:600;line-height:1.15;margin-top:14px;}
+.section-head p{margin-top:16px;color:var(--muted);font-size:17px;}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+}
+
+/* ============ ADMIN EDIT MODE ============ */
+[data-key]{ transition: box-shadow .15s ease; }
+body.admin-mode [data-key]{
+  outline:1.5px dashed rgba(184,145,43,0.55);
+  outline-offset:4px;
+  border-radius:4px;
+  cursor:text;
+}
+body.admin-mode [data-key]:hover{
+  outline-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(184,145,43,0.12);
+}
+body.admin-mode [data-key]:focus{
+  outline:2px solid var(--teal);
+  background:rgba(31,95,91,0.06);
+}
+.admin-bar{
+  position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+  background:var(--ink); color:#fff; z-index:999;
+  padding:12px 14px; border-radius:999px; display:none;
+  align-items:center; gap:10px; box-shadow:0 15px 40px -10px rgba(0,0,0,0.5);
+  font-size:14px;
+}
+body.admin-mode .admin-bar{display:flex;}
+.admin-bar span{font-family:var(--font-mono);font-size:12px;color:var(--gold-soft);padding-left:6px;}
+.admin-bar button{
+  border:none;border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;
+}
+.admin-bar .save{background:var(--teal);color:#fff;}
+.admin-bar .exit{background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.3) !important;}
+.admin-toast{
+  position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(10px);
+  background:var(--teal-dark); color:#fff; padding:10px 18px; border-radius:10px;
+  font-size:13.5px; z-index:1000; opacity:0; pointer-events:none; transition:.25s ease;
+}
+.admin-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.admin-login-link{
+  font-family:var(--font-mono); font-size:11.5px; letter-spacing:.05em; color:var(--muted);
+  opacity:0.6; background:none; border:none;
+}
+.admin-login-link:hover{opacity:1;color:var(--gold);}
+
+/* ============ HEADER ============ */
+header.site-header{
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  background:rgba(247,244,236,0.86); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.nav-wrap{display:flex; align-items:center; justify-content:space-between; height:78px;}
+.logo{font-family:var(--font-display); font-weight:600; font-size:21px; display:flex; align-items:baseline; gap:2px;}
+.logo .dot{color:var(--gold); font-size:26px; line-height:0;}
+nav.main-nav{display:flex; align-items:center; gap:34px;}
+nav.main-nav a.nav-link{font-size:14.5px; font-weight:500; color:var(--text); position:relative; padding:4px 0;}
+nav.main-nav a.nav-link::after{
+  content:''; position:absolute; left:0; bottom:-2px; width:0; height:1.5px; background:var(--gold); transition:width .2s ease;
+}
+nav.main-nav a.nav-link:hover::after{width:100%;}
+.nav-actions{display:flex; align-items:center; gap:18px;}
+.login-link{font-size:14px; font-weight:600; color:var(--teal-dark); white-space:nowrap;}
+.login-link:hover{color:var(--teal);}
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:13px 24px; border-radius:999px; font-weight:700; font-size:14.5px;
+  border:1px solid transparent; white-space:nowrap; transition:transform .18s ease, box-shadow .18s ease;
+}
+.btn-primary{background:var(--teal); color:#fff;}
+.btn-primary:hover{transform:translateY(-2px); box-shadow:0 14px 30px -12px rgba(31,95,91,0.55);}
+.btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-strong);}
+.btn-ghost:hover{border-color:var(--ink); transform:translateY(-2px);}
+.btn-gold{background:var(--gold); color:#221a04;}
+.btn-gold:hover{transform:translateY(-2px); box-shadow:0 14px 30px -12px rgba(184,145,43,0.6);}
+.burger{display:none; background:none; border:none; padding:8px;}
+.burger span{display:block; width:22px; height:2px; background:var(--ink); margin:5px 0; transition:.25s ease;}
+.mobile-menu{
+  display:none; position:fixed; inset:78px 0 0 0; background:var(--paper); z-index:400;
+  padding:32px 24px; flex-direction:column; gap:6px; overflow-y:auto;
+}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{padding:16px 4px; border-bottom:1px solid var(--line); font-size:17px; font-weight:600;}
+.mobile-menu .btn{margin-top:20px;}
+
+/* ============ HERO ============ */
+.hero{
+  padding:168px 0 96px; position:relative; overflow:hidden;
+  background:
+    radial-gradient(700px 420px at 85% -10%, rgba(184,145,43,0.14), transparent 60%),
+    var(--paper);
+}
+.hero-grid{display:grid; grid-template-columns:1.05fr 0.85fr; gap:56px; align-items:center;}
+.hero-badge{
+  display:inline-flex; align-items:center; gap:10px; background:var(--ink); color:var(--paper);
+  padding:8px 16px 8px 8px; border-radius:999px; font-size:12.5px; font-family:var(--font-mono);
+  letter-spacing:.03em; margin-bottom:26px;
+}
+.hero-badge .pulse{width:9px;height:9px;border-radius:50%;background:#57D9A3; position:relative;}
+.hero-badge .pulse::after{
+  content:''; position:absolute; inset:-4px; border-radius:50%; border:1.5px solid #57D9A3;
+  animation:pulse 2s ease-out infinite;
+}
+@keyframes pulse{0%{transform:scale(0.6);opacity:1;}100%{transform:scale(1.9);opacity:0;}}
+.hero-kicker{font-family:var(--font-mono); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal-dark); font-weight:600;}
+.hero h1{font-size:clamp(38px,5.2vw,64px); line-height:1.04; font-weight:600; margin-top:16px; letter-spacing:-0.01em;}
+.hero h1 em{font-style:italic; color:var(--teal);}
+.hero-sub{font-size:18.5px; color:var(--muted); max-width:520px; margin-top:22px;}
+.hero-ctas{display:flex; gap:14px; margin-top:36px; flex-wrap:wrap;}
+.hero-ctas .btn{padding:16px 28px; font-size:15px;}
+.hero-meta{display:flex; gap:28px; margin-top:44px; flex-wrap:wrap;}
+.hero-meta div{display:flex; flex-direction:column; gap:2px;}
+.hero-meta strong{font-family:var(--font-display); font-size:20px; color:var(--ink);}
+.hero-meta span{font-size:12.5px; color:var(--muted); font-family:var(--font-mono); letter-spacing:.03em;}
+
+/* signature: syllabus / diploma stamp card */
+.hero-visual{position:relative;}
+.syllabus-card{
+  background:var(--ink); color:var(--paper); border-radius:var(--radius-lg);
+  padding:38px 34px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.syllabus-card::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:6px;
+  background:linear-gradient(90deg, var(--gold), var(--teal));
+}
+.syllabus-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:26px;}
+.syllabus-top .code{font-family:var(--font-mono); font-size:12px; color:var(--gold-soft); letter-spacing:.08em;}
+.syllabus-top h3{font-size:22px; color:#fff; margin-top:8px; font-weight:500;}
+.stamp{
+  width:64px;height:64px;border-radius:50%; border:1.5px dashed rgba(217,188,110,0.7);
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  font-family:var(--font-mono); font-size:9px; color:var(--gold-soft); letter-spacing:.03em;
+  transform:rotate(-9deg); flex-shrink:0; line-height:1.25; padding:4px;
+}
+.syllabus-rows{display:flex; flex-direction:column; gap:0;}
+.syllabus-row{
+  display:flex; align-items:center; gap:14px; padding:13px 0; border-top:1px solid rgba(247,244,236,0.13);
+}
+.syllabus-row:first-child{border-top:none;}
+.syllabus-row .num{font-family:var(--font-mono); font-size:12px; color:rgba(247,244,236,0.45); width:44px; flex-shrink:0;}
+.syllabus-row .label{font-size:14.5px; color:rgba(247,244,236,0.92);}
+.syllabus-row .tick{margin-left:auto; color:#57D9A3; font-size:15px;}
+.syllabus-foot{
+  display:flex; justify-content:space-between; align-items:center; margin-top:24px; padding-top:20px;
+  border-top:1px solid rgba(247,244,236,0.13);
+}
+.syllabus-foot .tag{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; background:rgba(87,217,163,0.14);
+  color:#57D9A3; padding:6px 11px; border-radius:999px;
+}
+
+/* ============ APRESENTAÇÃO ============ */
+.presentation-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+.pcard{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:32px 28px;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.pcard:hover{transform:translateY(-5px); box-shadow:var(--shadow);}
+.pcard .idx{font-family:var(--font-mono); font-size:12px; color:var(--gold); letter-spacing:.06em; margin-bottom:14px; display:block;}
+.pcard h3{font-size:19px; font-weight:600; margin-bottom:12px;}
+.pcard p{color:var(--muted); font-size:15px;}
+
+/* ============ PARA QUEM É ============ */
+.profiles{background:var(--ink); color:var(--paper);}
+.profiles .section-head h2{color:#fff;}
+.profiles .section-head p{color:rgba(247,244,236,0.65);}
+.profiles .eyebrow{color:var(--gold-soft);}
+.profiles .eyebrow::before{background:var(--gold-soft);}
+.profile-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+.profile-item{
+  display:flex; gap:16px; align-items:flex-start; padding:24px; border-radius:var(--radius);
+  background:rgba(247,244,236,0.05); border:1px solid rgba(247,244,236,0.1);
+}
+.profile-item .mark{
+  width:34px; height:34px; border-radius:50%; background:rgba(87,217,163,0.15); color:#57D9A3;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; font-weight:700;
+}
+.profile-item p{font-size:15.5px; color:rgba(247,244,236,0.88);}
+
+/* ============ GRADE CURRICULAR (signature accordion) ============ */
+.curriculum-list{display:flex; flex-direction:column; gap:14px;}
+.mod{
+  border:1px solid var(--line); border-radius:var(--radius); background:#fff; overflow:hidden;
+}
+.mod-head{
+  display:flex; align-items:center; gap:20px; padding:22px 26px; width:100%; background:none; border:none; text-align:left;
+}
+.mod-head .rivet{
+  width:9px;height:9px;border-radius:50%; background:var(--gold); flex-shrink:0;
+  box-shadow:0 0 0 3px rgba(184,145,43,0.15);
+}
+.mod-head .mod-code{font-family:var(--font-mono); font-size:12.5px; color:var(--teal-dark); letter-spacing:.06em; width:64px; flex-shrink:0;}
+.mod-head .mod-title{font-size:18px; font-weight:600; color:var(--ink); flex:1;}
+.mod-head .mod-count{font-family:var(--font-mono); font-size:12px; color:var(--muted); white-space:nowrap;}
+.mod-head .chevron{width:20px;height:20px; flex-shrink:0; transition:transform .25s ease; color:var(--muted);}
+.mod.open .chevron{transform:rotate(180deg); color:var(--teal);}
+.mod-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
+.mod-body-in{padding:0 26px 26px 26px; display:flex; flex-direction:column; gap:0;}
+.mod-body-in p.mod-desc{color:var(--muted); font-size:14.5px; margin-bottom:16px; padding-left:84px;}
+.topic-row{display:flex; align-items:center; gap:14px; padding:11px 0 11px 84px; border-top:1px dashed var(--line); font-size:14.5px;}
+.topic-row:first-of-type{border-top:1px dashed var(--line);}
+.topic-row .tdot{width:5px;height:5px;border-radius:50%;background:var(--teal); flex-shrink:0;}
+
+/* ============ O QUE RECEBE ============ */
+.perks-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+.perk{background:var(--paper-2); border-radius:var(--radius); padding:28px; border:1px solid var(--line);}
+.perk .picon{
+  width:44px;height:44px;border-radius:12px; background:var(--teal); color:#fff;
+  display:flex; align-items:center; justify-content:center; margin-bottom:16px; font-size:19px;
+}
+.perk h4{font-size:16px; font-weight:600; margin-bottom:6px;}
+.perk p{font-size:14px; color:var(--muted);}
+
+/* ============ DIFERENCIAIS ============ */
+.diff-hero{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px;}
+.diff-big{
+  background:var(--teal); color:#fff; border-radius:var(--radius-lg); padding:42px; position:relative; overflow:hidden;
+}
+.diff-big.alt{background:var(--ink);}
+.diff-big .diff-num{font-family:var(--font-mono); font-size:13px; color:rgba(255,255,255,0.55); letter-spacing:.1em;}
+.diff-big h3{color:#fff; font-size:30px; margin-top:14px; font-weight:600;}
+.diff-big p{color:rgba(255,255,255,0.78); margin-top:12px; font-size:15px; max-width:380px;}
+.diff-small-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+.diff-small{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px;}
+.diff-small h4{font-size:15.5px; font-weight:600; margin-bottom:6px;}
+.diff-small p{font-size:13.5px; color:var(--muted);}
+
+/* ============ INVESTIMENTO ============ */
+.pricing-wrap{display:flex; justify-content:center;}
+.price-card{
+  max-width:480px; width:100%; background:var(--ink); color:#fff; border-radius:var(--radius-lg);
+  padding:44px 40px; position:relative; box-shadow:0 40px 80px -35px rgba(18,22,42,0.6); overflow:hidden;
+}
+.price-card::before{content:'';position:absolute; top:-40%; right:-20%; width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle, rgba(184,145,43,0.28), transparent 70%);}
+.price-badge{
+  display:inline-flex; align-items:center; gap:8px; background:rgba(87,217,163,0.15); color:#57D9A3;
+  padding:7px 14px; border-radius:999px; font-size:12.5px; font-family:var(--font-mono); font-weight:600;
+}
+.price-old{color:rgba(255,255,255,0.5); text-decoration:line-through; font-size:16px; margin-top:22px;}
+.price-main{display:flex; align-items:baseline; gap:10px; margin-top:6px;}
+.price-main .amount{font-family:var(--font-display); font-size:52px; font-weight:600;}
+.price-main .per{font-size:15px; color:rgba(255,255,255,0.65);}
+.price-cash{font-size:14.5px; color:rgba(255,255,255,0.75); margin-top:10px;}
+.price-save{
+  margin-top:18px; display:inline-flex; gap:8px; align-items:center; background:rgba(184,145,43,0.18);
+  color:var(--gold-soft); padding:9px 14px; border-radius:10px; font-size:13.5px; font-weight:600;
+}
+.price-list{margin-top:26px; display:flex; flex-direction:column; gap:11px;}
+.price-list div{display:flex; align-items:center; gap:10px; font-size:14px; color:rgba(255,255,255,0.85);}
+.price-list div::before{content:'✓'; color:#57D9A3; font-weight:700;}
+.price-card .btn{width:100%; margin-top:28px; padding:17px; font-size:15.5px;}
+
+/* ============ COMO FUNCIONA ============ */
+.steps-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative;}
+.step{padding:0 20px; position:relative;}
+.step:not(:first-child)::before{
+  content:''; position:absolute; top:23px; left:-20%; width:40%; height:1px; background:var(--line-strong);
+}
+.step .step-num{
+  width:46px;height:46px;border-radius:50%; background:#fff; border:1.5px solid var(--ink); color:var(--ink);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-weight:600; font-size:15px;
+  position:relative; z-index:1;
+}
+.step h4{font-size:16px; font-weight:600; margin:16px 0 6px;}
+.step p{font-size:13.5px; color:var(--muted);}
+
+/* ============ PROVA SOCIAL ============ */
+.testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+.testi{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:28px;}
+.testi .quote{font-size:14.5px; color:var(--text); font-style:italic; margin-bottom:20px;}
+.testi .who{display:flex; align-items:center; gap:12px;}
+.testi .avatar{
+  width:44px;height:44px;border-radius:50%; background:var(--paper-2); border:1px dashed var(--line-strong);
+  display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); font-family:var(--font-mono); text-align:center;
+}
+.testi .who strong{font-size:14px; display:block;}
+.testi .who span{font-size:12.5px; color:var(--muted);}
+
+/* ============ FAQ ============ */
+.faq-list{display:flex; flex-direction:column; gap:0; border-top:1px solid var(--line);}
+.faq-item{border-bottom:1px solid var(--line);}
+.faq-q{
+  width:100%; display:flex; justify-content:space-between; align-items:center; gap:20px; background:none; border:none;
+  padding:22px 4px; text-align:left; font-size:16.5px; font-weight:600; color:var(--ink); font-family:var(--font-body);
+}
+.faq-q .plus{font-size:20px; color:var(--teal); transition:transform .25s ease; flex-shrink:0;}
+.faq-item.open .plus{transform:rotate(45deg);}
+.faq-a{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+.faq-a-in{padding:0 4px 22px 4px; color:var(--muted); font-size:14.5px; max-width:760px;}
+
+/* ============ CTA FINAL ============ */
+.final-cta{
+  background:var(--ink); color:#fff; text-align:center; position:relative; overflow:hidden;
+}
+.final-cta::before{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(600px 300px at 50% 0%, rgba(184,145,43,0.18), transparent 65%);
+}
+.final-cta .inner{position:relative; max-width:680px; margin:0 auto;}
+.final-cta h2{color:#fff; font-size:clamp(28px,4vw,44px); font-weight:600;}
+.final-cta p{color:rgba(247,244,236,0.7); margin-top:16px; font-size:16.5px;}
+.final-price{
+  display:inline-flex; gap:16px; align-items:baseline; margin-top:28px; font-family:var(--font-mono);
+  color:var(--gold-soft); font-size:15px; flex-wrap:wrap; justify-content:center;
+}
+.final-price strong{font-family:var(--font-display); font-size:26px; color:#fff;}
+.final-cta .btn{margin-top:30px; padding:18px 34px; font-size:16px;}
+
+/* ============ FOOTER ============ */
+footer.site-footer{background:var(--ink-2); color:rgba(247,244,236,0.65); padding:64px 0 28px;}
+.footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:32px; padding-bottom:44px; border-bottom:1px solid rgba(247,244,236,0.1);}
+.footer-grid h5{color:#fff; font-size:13px; letter-spacing:.06em; text-transform:uppercase; font-family:var(--font-mono); margin-bottom:16px; font-weight:500;}
+.footer-grid a{display:block; padding:6px 0; font-size:14.5px; color:rgba(247,244,236,0.65);}
+.footer-grid a:hover{color:var(--gold-soft);}
+.footer-logo{font-family:var(--font-display); font-size:22px; color:#fff; margin-bottom:12px;}
+.footer-desc{font-size:14px; max-width:280px; color:rgba(247,244,236,0.5);}
+.footer-bottom{display:flex; justify-content:space-between; align-items:center; padding-top:24px; font-size:13px; flex-wrap:wrap; gap:12px;}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:960px){
+  nav.main-nav{display:none;}
+  .nav-actions .login-link{display:none;}
+  .burger{display:block;}
+  .hero-grid{grid-template-columns:1fr;}
+  .hero{padding-top:150px;}
+  .presentation-grid, .perks-grid, .diff-small-grid, .testi-grid{grid-template-columns:1fr 1fr;}
+  .profile-grid{grid-template-columns:1fr;}
+  .steps-grid{grid-template-columns:1fr 1fr; row-gap:36px;}
+  .step:nth-child(3)::before, .step:not(:first-child)::before{display:none;}
+  .diff-hero{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:620px){
+  .section{padding:72px 0;}
+  .presentation-grid, .perks-grid, .diff-small-grid, .testi-grid, .steps-grid{grid-template-columns:1fr;}
+  .hero-ctas{flex-direction:column; align-items:stretch;}
+  .hero-ctas .btn{width:100%;}
+  .topic-row, .mod-body-in p.mod-desc{padding-left:22px;}
+  .footer-grid{grid-template-columns:1fr;}
+  .footer-bottom{flex-direction:column; align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a href="#hero" class="logo" data-key="logo-text"><span class="dot">•</span>&nbsp;Nome do Curso</a>
+    <nav class="main-nav">
+      <a class="nav-link" href="#curso">O curso</a>
+      <a class="nav-link" href="#grade">Grade curricular</a>
+      <a class="nav-link" href="#beneficios">Benefícios</a>
+      <a class="nav-link" href="#faq">Dúvidas</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="login-link" href="login.html">Já sou aluno</a>
+      <a class="btn btn-primary" href="inscricao.html">Quero me inscrever</a>
+      <button class="burger" id="burgerBtn" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#curso">O curso</a>
+  <a href="#grade">Grade curricular</a>
+  <a href="#beneficios">Benefícios</a>
+  <a href="#faq">Dúvidas</a>
+  <a href="login.html">Já sou aluno · Login</a>
+  <a class="btn btn-primary" href="inscricao.html">Quero me inscrever</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-badge"><span class="pulse"></span> Turma com inscrições abertas</div>
+      <span class="hero-kicker" data-key="hero-kicker">Programa online · Certificado ao final</span>
+      <h1 data-key="hero-title">Domine <em>[Área do Curso]</em> com uma formação pensada do zero ao avançado</h1>
+      <p class="hero-sub" data-key="hero-sub">Um programa 100% digital, com grade estruturada em módulos, para você aprender no seu ritmo e sair pronto para aplicar o conhecimento na prática.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="inscricao.html">Quero me inscrever</a>
+        <a class="btn btn-ghost" href="#grade">Conhecer a grade</a>
+      </div>
+      <div class="hero-meta">
+        <div><strong>100%</strong><span>Digital</span></div>
+        <div><strong>18 meses</strong><span>De acesso</span></div>
+        <div><strong data-key="hero-meta-modulos">6 módulos</strong><span>Na grade</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="syllabus-card">
+        <div class="syllabus-top">
+          <div>
+            <div class="code">GRADE · PREVIEW</div>
+            <h3 data-key="hero-card-title">Estrutura do curso</h3>
+          </div>
+          <div class="stamp">100%<br>DIGITAL</div>
+        </div>
+        <div class="syllabus-rows">
+          <div class="syllabus-row"><span class="num">MOD.01</span><span class="label" data-key="hero-row-1">Fundamentos</span><span class="tick">✓</span></div>
+          <div class="syllabus-row"><span class="num">MOD.02</span><span class="label" data-key="hero-row-2">Ferramentas e prática</span><span class="tick">✓</span></div>
+          <div class="syllabus-row"><span class="num">MOD.03</span><span class="label" data-key="hero-row-3">Projeto aplicado</span><span class="tick">✓</span></div>
+          <div class="syllabus-row"><span class="num">MOD.04</span><span class="label" data-key="hero-row-4">Avançado</span><span class="tick">✓</span></div>
+        </div>
+        <div class="syllabus-foot">
+          <span style="font-family:var(--font-mono); font-size:11px; color:rgba(247,244,236,0.5);">acesso válido por 18 meses</span>
+          <span class="tag">ao vivo + on-demand</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APRESENTAÇÃO ============ -->
+<section class="section" id="curso">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">O curso</span>
+      <h2 data-key="pres-title">Uma formação completa, pensada para gerar resultado real</h2>
+      <p data-key="pres-sub">Conheça o que torna este programa diferente e para quem ele foi criado.</p>
+    </div>
+    <div class="presentation-grid">
+      <div class="pcard">
+        <span class="idx">01</span>
+        <h3 data-key="pres-1-title">O que é o curso</h3>
+        <p data-key="pres-1-body">Um programa online estruturado em módulos progressivos, combinando teoria, prática e acompanhamento para levar você do básico ao avançado.</p>
+      </div>
+      <div class="pcard">
+        <span class="idx">02</span>
+        <h3 data-key="pres-2-title">Para quem foi criado</h3>
+        <p data-key="pres-2-body">Para quem quer construir uma base sólida e aplicável, independentemente do ponto de partida, com um caminho claro a seguir.</p>
+      </div>
+      <div class="pcard">
+        <span class="idx">03</span>
+        <h3 data-key="pres-3-title">Resultado esperado</h3>
+        <p data-key="pres-3-body">Ao final, você terá domínio prático do conteúdo da grade curricular e um portfólio de aprendizado aplicado ao seu contexto.</p>
+      </div>
+      <div class="pcard">
+        <span class="idx">04</span>
+        <h3 data-key="pres-4-title">Por que é diferente</h3>
+        <p data-key="pres-4-body">Grade curricular organizada em etapas claras, 100% digital e com acesso estendido — sem pressa para você aprender no seu tempo.</p>
+      </div>
+      <div class="pcard">
+        <span class="idx">05</span>
+        <h3 data-key="pres-5-title">Formato do curso</h3>
+        <p data-key="pres-5-body">Conteúdo 100% online, disponível na plataforma, para assistir e revisar quando quiser durante todo o período de acesso.</p>
+      </div>
+      <div class="pcard">
+        <span class="idx">06</span>
+        <h3 data-key="pres-6-title">Acompanhamento</h3>
+        <p data-key="pres-6-body">[Placeholder: descrever aqui o modelo de suporte/mentoria oferecido, quando esta informação for definida.]</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PARA QUEM É ============ -->
+<section class="section profiles">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Para quem é</span>
+      <h2 data-key="profiles-title">Este curso é para você se...</h2>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-item"><span class="mark">✓</span><p data-key="profile-1">Você quer aprender do zero, com uma trilha clara e sem se perder em conteúdos soltos.</p></div>
+      <div class="profile-item"><span class="mark">✓</span><p data-key="profile-2">Você já tem alguma experiência, mas busca aprofundar e organizar o que já sabe.</p></div>
+      <div class="profile-item"><span class="mark">✓</span><p data-key="profile-3">Você prefere estudar no seu ritmo, com acesso 100% digital e flexível.</p></div>
+      <div class="profile-item"><span class="mark">✓</span><p data-key="profile-4">Você busca um conteúdo prático, aplicável e organizado por módulos.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRADE CURRICULAR ============ -->
+<section class="section" id="grade">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Grade curricular</span>
+      <h2 data-key="grade-title">Toda a jornada, organizada por módulos</h2>
+      <p data-key="grade-sub">Clique em cada módulo para ver as disciplinas e conteúdos que o compõem.</p>
+    </div>
+    <div class="curriculum-list" id="curriculumList">
+
+      <div class="mod open">
+        <button class="mod-head">
+          <span class="rivet"></span>
+          <span class="mod-code">MOD. 01</span>
+          <span class="mod-title" data-key="mod1-title">Fundamentos</span>
+          <span class="mod-count" data-key="mod1-count">4 aulas</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mod-body">
+          <div class="mod-body-in">
+            <p class="mod-desc" data-key="mod1-desc">Base teórica necessária para acompanhar o restante do curso com segurança.</p>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod1-t1">Introdução e visão geral</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod1-t2">Conceitos essenciais</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod1-t3">Ferramentas utilizadas no curso</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod1-t4">Exercício prático de fixação</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mod">
+        <button class="mod-head">
+          <span class="rivet"></span>
+          <span class="mod-code">MOD. 02</span>
+          <span class="mod-title" data-key="mod2-title">Ferramentas e prática</span>
+          <span class="mod-count" data-key="mod2-count">5 aulas</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mod-body">
+          <div class="mod-body-in">
+            <p class="mod-desc" data-key="mod2-desc">Aplicação prática dos conceitos aprendidos no módulo anterior.</p>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod2-t1">Configuração do ambiente/ferramentas</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod2-t2">Prática guiada</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod2-t3">Estudo de caso</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod2-t4">Erros comuns e como evitá-los</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod2-t5">Exercício prático</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mod">
+        <button class="mod-head">
+          <span class="rivet"></span>
+          <span class="mod-code">MOD. 03</span>
+          <span class="mod-title" data-key="mod3-title">Projeto aplicado</span>
+          <span class="mod-count" data-key="mod3-count">4 aulas</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mod-body">
+          <div class="mod-body-in">
+            <p class="mod-desc" data-key="mod3-desc">Desenvolvimento de um projeto do início ao fim, aplicando o conteúdo do curso.</p>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod3-t1">Planejamento do projeto</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod3-t2">Desenvolvimento — parte 1</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod3-t3">Desenvolvimento — parte 2</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod3-t4">Revisão e ajustes finais</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mod">
+        <button class="mod-head">
+          <span class="rivet"></span>
+          <span class="mod-code">MOD. 04</span>
+          <span class="mod-title" data-key="mod4-title">Avançado</span>
+          <span class="mod-count" data-key="mod4-count">5 aulas</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mod-body">
+          <div class="mod-body-in">
+            <p class="mod-desc" data-key="mod4-desc">Tópicos avançados para aprofundar o domínio do conteúdo.</p>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod4-t1">Tópico avançado 1</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod4-t2">Tópico avançado 2</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod4-t3">Tópico avançado 3</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod4-t4">Boas práticas de mercado</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod4-t5">Exercício prático</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mod">
+        <button class="mod-head">
+          <span class="rivet"></span>
+          <span class="mod-code">MOD. 05</span>
+          <span class="mod-title" data-key="mod5-title">[Nome do módulo 5]</span>
+          <span class="mod-count" data-key="mod5-count">— aulas</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mod-body">
+          <div class="mod-body-in">
+            <p class="mod-desc" data-key="mod5-desc">[Placeholder: descrição deste módulo a ser preenchida.]</p>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod5-t1">[Conteúdo a definir]</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod5-t2">[Conteúdo a definir]</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mod">
+        <button class="mod-head">
+          <span class="rivet"></span>
+          <span class="mod-code">MOD. 06</span>
+          <span class="mod-title" data-key="mod6-title">[Nome do módulo 6]</span>
+          <span class="mod-count" data-key="mod6-count">— aulas</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="mod-body">
+          <div class="mod-body-in">
+            <p class="mod-desc" data-key="mod6-desc">[Placeholder: descrição deste módulo a ser preenchida.]</p>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod6-t1">[Conteúdo a definir]</span></div>
+            <div class="topic-row"><span class="tdot"></span><span data-key="mod6-t2">[Conteúdo a definir]</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ O QUE O ALUNO RECEBE ============ -->
+<section class="section" id="beneficios" style="background:var(--paper-2);">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Ao se inscrever, você recebe</span>
+      <h2 data-key="perks-title">Tudo que está incluso</h2>
+    </div>
+    <div class="perks-grid">
+      <div class="perk"><div class="picon">▤</div><h4 data-key="perk-1-title">Acesso ao conteúdo completo</h4><p data-key="perk-1-body">Todos os módulos da grade curricular liberados na plataforma.</p></div>
+      <div class="perk"><div class="picon">▶</div><h4 data-key="perk-2-title">Aulas online</h4><p data-key="perk-2-body">Aulas gravadas para assistir e revisar quando quiser.</p></div>
+      <div class="perk"><div class="picon">✎</div><h4 data-key="perk-3-title">Materiais complementares</h4><p data-key="perk-3-body">Materiais de apoio para reforçar o aprendizado de cada módulo.</p></div>
+      <div class="perk"><div class="picon">◧</div><h4 data-key="perk-4-title">Acesso à plataforma</h4><p data-key="perk-4-body">Ambiente próprio para acompanhar seu progresso no curso.</p></div>
+      <div class="perk"><div class="picon">⏱</div><h4 data-key="perk-5-title">18 meses de acesso</h4><p data-key="perk-5-body">Tempo estendido para estudar no seu ritmo, sem pressa.</p></div>
+      <div class="perk"><div class="picon">◎</div><h4 data-key="perk-6-title">100% digital</h4><p data-key="perk-6-body">Estude de onde estiver, direto pelo computador ou celular.</p></div>
+      <div class="perk"><div class="picon">＋</div><h4 data-key="perk-7-title">[Benefício adicional]</h4><p data-key="perk-7-body">[Placeholder: incluir aqui outro benefício, quando informado.]</p></div>
+      <div class="perk"><div class="picon">＋</div><h4 data-key="perk-8-title">[Benefício adicional]</h4><p data-key="perk-8-body">[Placeholder: incluir aqui outro benefício, quando informado.]</p></div>
+      <div class="perk"><div class="picon">＋</div><h4 data-key="perk-9-title">[Benefício adicional]</h4><p data-key="perk-9-body">[Placeholder: incluir aqui outro benefício, quando informado.]</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIFERENCIAIS ============ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Diferenciais</span>
+      <h2 data-key="diff-title">O que torna esse programa único</h2>
+    </div>
+    <div class="diff-hero">
+      <div class="diff-big">
+        <span class="diff-num">DIFERENCIAL 01</span>
+        <h3>100% digital</h3>
+        <p data-key="diff-1-body">Estude de qualquer lugar, no seu horário, sem depender de deslocamento ou turma presencial.</p>
+      </div>
+      <div class="diff-big alt">
+        <span class="diff-num">DIFERENCIAL 02</span>
+        <h3>18 meses de acesso</h3>
+        <p data-key="diff-2-body">Tempo estendido após a compra para você rever conteúdos e estudar sem correria.</p>
+      </div>
+    </div>
+    <div class="diff-small-grid">
+      <div class="diff-small"><h4 data-key="diff-3-title">Grade estruturada</h4><p data-key="diff-3-body">Conteúdo organizado em módulos progressivos, do básico ao avançado.</p></div>
+      <div class="diff-small"><h4 data-key="diff-4-title">Aprendizado prático</h4><p data-key="diff-4-body">Exercícios e projeto aplicado ao longo da grade curricular.</p></div>
+      <div class="diff-small"><h4 data-key="diff-5-title">Plataforma própria</h4><p data-key="diff-5-body">Acompanhe seu progresso e acesse tudo em um só lugar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INVESTIMENTO ============ -->
+<section class="section" id="investimento" style="background:var(--paper-2);">
+  <div class="container">
+    <div class="section-head" style="margin-left:auto;margin-right:auto;text-align:center;">
+      <span class="eyebrow" style="justify-content:center;">Investimento</span>
+      <h2 data-key="price-title">Faça sua inscrição</h2>
+      <p data-key="price-sub">Acesso disponível por 18 meses após a compra · 100% digital</p>
+    </div>
+    <div class="pricing-wrap">
+      <div class="price-card">
+        <span class="price-badge">Vagas abertas</span>
+        <div class="price-old">De R$ 4.200,00</div>
+        <div class="price-main"><span class="amount">R$ 170</span><span class="per">/mês</span></div>
+        <div class="price-cash">12x de R$ 170 <strong style="color:#fff;">ou</strong> R$ 2.040,00 à vista</div>
+        <div class="price-save">Economize R$ 2.160,00</div>
+        <div class="price-list">
+          <div>Acesso disponível por 18 meses após a compra</div>
+          <div>100% digital</div>
+          <div>Todos os módulos da grade curricular</div>
+          <div>Acesso à plataforma</div>
+        </div>
+        <a href="inscricao.html" class="btn btn-gold">Quero me inscrever</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMO FUNCIONA ============ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Como funciona</span>
+      <h2 data-key="how-title">Do clique ao primeiro módulo</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step"><div class="step-num">1</div><h4 data-key="how-1-title">Faça sua inscrição</h4><p data-key="how-1-body">Preencha seus dados e escolha a forma de pagamento.</p></div>
+      <div class="step"><div class="step-num">2</div><h4 data-key="how-2-title">Realize o pagamento</h4><p data-key="how-2-body">À vista ou parcelado, em ambiente seguro.</p></div>
+      <div class="step"><div class="step-num">3</div><h4 data-key="how-3-title">Receba seu acesso</h4><p data-key="how-3-body">Você recebe os dados de acesso à plataforma por e-mail.</p></div>
+      <div class="step"><div class="step-num">4</div><h4 data-key="how-4-title">Comece a estudar</h4><p data-key="how-4-body">Entre na plataforma e inicie pelo Módulo 01.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROVA SOCIAL ============ -->
+<section class="section" style="background:var(--paper-2);">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Prova social</span>
+      <h2 data-key="testi-title">Quem já estudou, conta como foi</h2>
+      <p data-key="testi-sub">[Placeholder: espaço reservado para depoimentos reais de alunos. Substituir pelos depoimentos oficiais quando disponíveis.]</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi">
+        <p class="quote" data-key="testi-1-quote">"[Espaço reservado para depoimento do aluno.]"</p>
+        <div class="who"><div class="avatar">FOTO</div><div><strong data-key="testi-1-name">Nome do aluno</strong><span data-key="testi-1-role">Profissão / cargo</span></div></div>
+      </div>
+      <div class="testi">
+        <p class="quote" data-key="testi-2-quote">"[Espaço reservado para depoimento do aluno.]"</p>
+        <div class="who"><div class="avatar">FOTO</div><div><strong data-key="testi-2-name">Nome do aluno</strong><span data-key="testi-2-role">Profissão / cargo</span></div></div>
+      </div>
+      <div class="testi">
+        <p class="quote" data-key="testi-3-quote">"[Espaço reservado para depoimento do aluno.]"</p>
+        <div class="who"><div class="avatar">FOTO</div><div><strong data-key="testi-3-name">Nome do aluno</strong><span data-key="testi-3-role">Profissão / cargo</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Dúvidas frequentes</span>
+      <h2 data-key="faq-title">Perguntas frequentes</h2>
+    </div>
+    <div class="faq-list" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-1-q">Como funciona o curso?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-1-a">O curso é organizado em módulos, disponíveis na plataforma para você assistir no seu ritmo.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-2-q">O curso é 100% online?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-2-a">Sim, todo o conteúdo é 100% digital e acessado pela plataforma.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-3-q">Por quanto tempo terei acesso?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-3-a">Você terá acesso por 18 meses a partir da data da compra.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-4-q">Posso assistir pelo celular?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-4-a">[Placeholder: confirmar compatibilidade da plataforma com dispositivos móveis.]</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-5-q">Como funciona o pagamento?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-5-a">O pagamento pode ser feito à vista (R$ 2.040,00) ou parcelado em 12x de R$ 170.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-6-q">O que acontece depois da compra?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-6-a">Você recebe os dados de acesso à plataforma por e-mail para começar a estudar.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-7-q">Existe certificado?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-7-a">[Placeholder: informar aqui se há emissão de certificado ao concluir o curso.]</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-8-q">Como entro na plataforma?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-8-a">Basta acessar a página de login com o e-mail e senha enviados após a compra.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><span data-key="faq-9-q">Posso parcelar?</span><span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-in" data-key="faq-9-a">Sim, em até 12x de R$ 170.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL ============ -->
+<section class="section final-cta">
+  <div class="container inner">
+    <h2 data-key="finalcta-title">Sua próxima etapa começa aqui</h2>
+    <p data-key="finalcta-sub">Garanta sua vaga e comece a estudar com acesso imediato à plataforma.</p>
+    <div class="final-price">
+      <span><strong>12x de R$ 170</strong></span>
+      <span>ou</span>
+      <span><strong>R$ 2.040,00</strong> à vista</span>
+    </div>
+    <div>
+      <a href="inscricao.html" class="btn btn-gold">Quero me inscrever</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo" data-key="footer-logo">Nome do Curso</div>
+        <p class="footer-desc" data-key="footer-desc">Programa educacional 100% digital, com grade curricular estruturada em módulos.</p>
+      </div>
+      <div>
+        <h5>Institucional</h5>
+        <a href="#curso">O curso</a>
+        <a href="#grade">Grade curricular</a>
+        <a href="#beneficios">Benefícios</a>
+        <a href="inscricao.html">Quero me inscrever</a>
+      </div>
+      <div>
+        <h5>Suporte</h5>
+        <a href="#faq">Dúvidas frequentes</a>
+        <a href="#" data-key="footer-contact">Contato</a>
+        <a href="login.html">Login</a>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <a href="#">Política de privacidade</a>
+        <a href="#">Termos de uso</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-key="footer-copyright">© 2026 Nome do Curso. Todos os direitos reservados.</span>
+      <button class="admin-login-link" id="adminTrigger">Área administrativa</button>
+    </div>
+  </div>
+</footer>
+
+<div class="admin-bar" id="adminBar">
+  <span>Modo edição ativo</span>
+  <button class="save" id="saveBtn">Salvar alterações</button>
+  <button class="exit" id="exitBtn">Sair</button>
+</div>
+<div class="admin-toast" id="adminToast"></div>
+
+<script>
+/* ============ MOBILE MENU ============ */
+const burgerBtn = document.getElementById('burgerBtn');
+const mobileMenu = document.getElementById('mobileMenu');
+burgerBtn.addEventListener('click', () => {
+  const open = mobileMenu.classList.toggle('open');
+  burgerBtn.setAttribute('aria-expanded', open);
+});
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobileMenu.classList.remove('open');
+  burgerBtn.setAttribute('aria-expanded', 'false');
+}));
+
+/* ============ CURRICULUM ACCORDION ============ */
+document.querySelectorAll('.mod-head').forEach(head => {
+  head.addEventListener('click', () => {
+    const mod = head.parentElement;
+    const body = mod.querySelector('.mod-body');
+    const wasOpen = mod.classList.contains('open');
+    document.querySelectorAll('.mod').forEach(m => {
+      m.classList.remove('open');
+      m.querySelector('.mod-body').style.maxHeight = null;
+    });
+    if (!wasOpen) {
+      mod.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  });
+});
+// open first module by default
+window.addEventListener('load', () => {
+  const firstMod = document.querySelector('.mod.open .mod-body');
+  if (firstMod) firstMod.style.maxHeight = firstMod.scrollHeight + 'px';
+});
+
+/* ============ FAQ ACCORDION ============ */
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const answer = item.querySelector('.faq-a');
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.faq-a').style.maxHeight = null;
+    });
+    if (!wasOpen) {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+});
+
+/* ============ ADMIN EDIT MODE ============ */
+const DEFAULT_ADMIN_PASSWORD = 'admin123'; // senha padrão inicial — recomenda-se alterar
+const adminBar = document.getElementById('adminBar');
+const adminToast = document.getElementById('adminToast');
+const adminTrigger = document.getElementById('adminTrigger');
+const saveBtn = document.getElementById('saveBtn');
+const exitBtn = document.getElementById('exitBtn');
+
+function showToast(msg){
+  adminToast.textContent = msg;
+  adminToast.classList.add('show');
+  setTimeout(()=>adminToast.classList.remove('show'), 2200);
+}
+
+async function getStoredPassword(){
+  try {
+    const res = await window.storage.get('admin_password', true);
+    return res ? res.value : DEFAULT_ADMIN_PASSWORD;
+  } catch(e) { return DEFAULT_ADMIN_PASSWORD; }
+}
+
+async function loadContent(){
+  try {
+    const res = await window.storage.get('site_content', true);
+    if (res && res.value) {
+      const data = JSON.parse(res.value);
+      Object.keys(data).forEach(key => {
+        const el = document.querySelector('[data-key="' + key + '"]');
+        if (el) el.innerHTML = data[key];
+      });
+    }
+  } catch(e) { /* nenhum conteúdo salvo ainda */ }
+}
+
+async function saveContent(){
+  const data = {};
+  document.querySelectorAll('[data-key]').forEach(el => {
+    data[el.getAttribute('data-key')] = el.innerHTML;
+  });
+  try {
+    await window.storage.set('site_content', JSON.stringify(data), true);
+    showToast('Alterações salvas com sucesso.');
+  } catch(e) {
+    showToast('Erro ao salvar. Tente novamente.');
+  }
+}
+
+function enterAdminMode(){
+  document.body.classList.add('admin-mode');
+  document.querySelectorAll('[data-key]').forEach(el => el.setAttribute('contenteditable', 'true'));
+}
+function exitAdminMode(){
+  document.body.classList.remove('admin-mode');
+  document.querySelectorAll('[data-key]').forEach(el => el.removeAttribute('contenteditable'));
+}
+
+adminTrigger.addEventListener('click', async () => {
+  const pass = prompt('Digite a senha de administrador:');
+  if (pass === null) return;
+  const stored = await getStoredPassword();
+  if (pass === stored) {
+    enterAdminMode();
+    showToast('Modo de edição ativado.');
+  } else {
+    alert('Senha incorreta.');
+  }
+});
+saveBtn.addEventListener('click', saveContent);
+exitBtn.addEventListener('click', exitAdminMode);
+
+loadContent();
+</script>
+</body>
+</html>
