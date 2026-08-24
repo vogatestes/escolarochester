@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Montar prova — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA;
+  --radius:14px; --radius-lg:22px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:var(--font-body); color:var(--text); background:var(--paper); min-height:100vh;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button, select, input, textarea{font-family:inherit;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:26px 40px;}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:18px;}
+.brand .dot{color:var(--gold); font-size:22px; line-height:0;}
+.back-link{font-size:13.5px; font-weight:600; color:var(--muted);}
+.back-link:hover{color:var(--ink);}
+
+.wrap{max-width:680px; margin:0 auto; padding:10px 24px 100px;}
+.wrap h1{font-size:26px; font-weight:600; margin-bottom:24px;}
+
+.field{margin-bottom:22px;}
+.field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+.field select, .field input[type="text"]{
+  width:100%; padding:14px 16px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:15px; background:#fff; color:var(--text);
+}
+.field select:focus, .field input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+
+.question-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); padding:24px 24px 20px; margin-bottom:20px;}
+.question-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.question-head .qnum{font-family:var(--font-mono); font-size:12.5px; color:var(--teal-dark); font-weight:600; letter-spacing:.05em;}
+.remove-q{background:none; border:none; color:var(--error); font-size:13px; font-weight:600; cursor:pointer;}
+.question-card textarea{
+  width:100%; min-height:70px; padding:12px 14px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:14.5px; resize:vertical; margin-bottom:16px; font-family:inherit;
+}
+.question-card textarea:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.alt-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.alt-row input[type="radio"]{width:18px; height:18px; flex-shrink:0; accent-color:var(--teal);}
+.alt-row input[type="text"]{
+  flex:1; padding:11px 14px; border-radius:8px; border:1.5px solid var(--line-strong); font-size:14px;
+}
+.alt-row input[type="text"]:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.alt-hint{font-size:12px; color:var(--muted); margin-top:4px; margin-bottom:2px;}
+
+.add-question-btn{
+  width:100%; padding:14px; border:1.5px dashed var(--line-strong); border-radius:var(--radius); background:none;
+  color:var(--teal-dark); font-weight:700; font-size:14px; cursor:pointer; margin-bottom:30px;
+}
+.add-question-btn:hover{border-color:var(--teal); color:var(--teal);}
+
+.form-alert{display:none; align-items:flex-start; gap:10px; background:var(--error-bg); border:1px solid rgba(179,66,58,0.25);
+  color:var(--error); padding:13px 14px; border-radius:10px; font-size:13.5px; margin-bottom:20px;}
+.form-alert.show{display:flex;}
+.form-alert strong{display:block; margin-bottom:2px; font-size:14px;}
+
+.btn-save{
+  width:100%; padding:16px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15.5px; cursor:pointer;
+}
+.btn-save:hover{transform:translateY(-2px);}
+
+.toast{
+  position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(10px); background:var(--ink); color:#fff;
+  padding:12px 20px; border-radius:10px; font-size:14px; z-index:100; opacity:0; pointer-events:none; transition:.25s ease;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot">•</span>Nome do Curso</div>
+  <a href="#" id="backLink" class="back-link">← Voltar ao dashboard</a>
+</div>
+
+<div class="wrap">
+  <h1 id="pageTitle">Criar prova</h1>
+
+  <div class="form-alert" id="formAlert"><div><strong id="formAlertTitle">Verifique os campos</strong><span id="formAlertBody"></span></div></div>
+
+  <div class="field">
+    <label for="materiaSelect">Matéria vinculada</label>
+    <select id="materiaSelect"></select>
+  </div>
+  <div class="field">
+    <label for="tituloProva">Título da prova</label>
+    <input type="text" id="tituloProva" placeholder="Ex: Prova — Módulo 1">
+  </div>
+
+  <div id="questionsContainer"></div>
+  <button type="button" class="add-question-btn" id="addQuestionBtn">+ Adicionar pergunta</button>
+
+  <button type="button" class="btn-save" id="saveBtn">Salvar prova</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* Mesma estrutura de curso/módulos/matérias usada nas telas do aluno. */
+const CURSO = {
+  id:'curso-1', nome:'Nome do Curso',
+  modulos:[
+    { id:'mod-1', nome:'Fundamentos', materias:[
+        { id:'mod-1-mat-1', nome:'Introdução' }, { id:'mod-1-mat-2', nome:'Fundamentos' },
+        { id:'mod-1-mat-3', nome:'Prática' }, { id:'mod-1-mat-4', nome:'Projeto' } ]},
+    { id:'mod-2', nome:'Ferramentas e prática', materias:[
+        { id:'mod-2-mat-1', nome:'Configuração do ambiente' }, { id:'mod-2-mat-2', nome:'Prática guiada' },
+        { id:'mod-2-mat-3', nome:'Estudo de caso' }, { id:'mod-2-mat-4', nome:'Erros comuns' }, { id:'mod-2-mat-5', nome:'Exercício prático' } ]},
+    { id:'mod-3', nome:'Projeto aplicado', materias:[
+        { id:'mod-3-mat-1', nome:'Planejamento' }, { id:'mod-3-mat-2', nome:'Desenvolvimento (parte 1)' },
+        { id:'mod-3-mat-3', nome:'Desenvolvimento (parte 2)' }, { id:'mod-3-mat-4', nome:'Revisão final' } ]},
+    { id:'mod-4', nome:'Avançado', materias:[
+        { id:'mod-4-mat-1', nome:'Tópico avançado 1' }, { id:'mod-4-mat-2', nome:'Tópico avançado 2' },
+        { id:'mod-4-mat-3', nome:'Tópico avançado 3' }, { id:'mod-4-mat-4', nome:'Boas práticas' }, { id:'mod-4-mat-5', nome:'Exercício prático' } ]},
+    { id:'mod-5', nome:'[Nome do módulo 5]', materias:[ { id:'mod-5-mat-1', nome:'[Matéria a definir]' } ]},
+    { id:'mod-6', nome:'[Nome do módulo 6]', materias:[ { id:'mod-6-mat-1', nome:'[Matéria a definir]' } ]}
+  ]
+};
+
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+async function loadProvas(){
+  const stored = await storageGet('provas', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+async function saveProvas(list){ await storageSet('provas', JSON.stringify(list), true); }
+
+const params = new URLSearchParams(window.location.search);
+const professorId = params.get('professor') || '';
+const provaIdEditando = params.get('prova');
+document.getElementById('backLink').href = 'professor-dashboard.html?id=' + encodeURIComponent(professorId);
+
+const materiaSelect = document.getElementById('materiaSelect');
+CURSO.modulos.forEach(mod => {
+  const group = document.createElement('optgroup');
+  group.label = mod.nome;
+  mod.materias.forEach(mat => {
+    const opt = document.createElement('option');
+    opt.value = mat.id;
+    opt.textContent = mat.nome;
+    group.appendChild(opt);
+  });
+  materiaSelect.appendChild(group);
+});
+
+let questionCount = 0;
+const questionsContainer = document.getElementById('questionsContainer');
+
+function addQuestion(data){
+  questionCount++;
+  const qid = 'q-' + Date.now() + '-' + questionCount;
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.dataset.qid = qid;
+  card.innerHTML =
+    '<div class="question-head"><span class="qnum">Pergunta ' + questionCount + '</span><button type="button" class="remove-q">Remover</button></div>' +
+    '<textarea class="q-enunciado" placeholder="Digite o enunciado da pergunta...">' + (data && data.enunciado ? data.enunciado : '') + '</textarea>' +
+    '<div class="alt-hint">Marque a alternativa correta</div>' +
+    [0,1,2,3].map(i => {
+      const alt = data && data.alternativas ? data.alternativas[i] : null;
+      const checked = data && alt && data.corretaId === alt.id ? 'checked' : '';
+      return '<div class="alt-row"><input type="radio" name="correta-' + qid + '" class="q-correta" value="' + i + '" ' + checked + '>' +
+        '<input type="text" class="q-alt" placeholder="Alternativa ' + (i + 1) + '" value="' + (alt ? alt.texto.replace(/"/g,'&quot;') : '') + '"></div>';
+    }).join('');
+  questionsContainer.appendChild(card);
+
+  card.querySelector('.remove-q').addEventListener('click', () => {
+    card.remove();
+    renumberQuestions();
+  });
+}
+
+function renumberQuestions(){
+  questionsContainer.querySelectorAll('.question-card').forEach((card, i) => {
+    card.querySelector('.qnum').textContent = 'Pergunta ' + (i + 1);
+  });
+}
+
+document.getElementById('addQuestionBtn').addEventListener('click', () => addQuestion());
+
+async function init(){
+  if (provaIdEditando){
+    const provas = await loadProvas();
+    const prova = provas.find(p => p.id === provaIdEditando);
+    if (prova){
+      document.getElementById('pageTitle').textContent = 'Editar prova';
+      document.getElementById('tituloProva').value = prova.tituloProva;
+      materiaSelect.value = prova.materiaId;
+      prova.perguntas.forEach(p => addQuestion(p));
+      return;
+    }
+  }
+  addQuestion();
+}
+init();
+
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  const formAlert = document.getElementById('formAlert');
+  formAlert.classList.remove('show');
+
+  const titulo = document.getElementById('tituloProva').value.trim();
+  const materiaId = materiaSelect.value;
+  const cards = Array.from(questionsContainer.querySelectorAll('.question-card'));
+
+  if (!titulo){
+    document.getElementById('formAlertBody').textContent = 'Dê um título para a prova.';
+    formAlert.classList.add('show');
+    return;
+  }
+  if (cards.length === 0){
+    document.getElementById('formAlertBody').textContent = 'Adicione ao menos uma pergunta.';
+    formAlert.classList.add('show');
+    return;
+  }
+
+  const perguntas = [];
+  for (const card of cards){
+    const enunciado = card.querySelector('.q-enunciado').value.trim();
+    const altInputs = Array.from(card.querySelectorAll('.q-alt'));
+    const alternativas = altInputs.map((input, i) => ({ id: 'a' + i, texto: input.value.trim() }));
+    const correctaInput = card.querySelector('.q-correta:checked');
+
+    if (!enunciado || alternativas.some(a => !a.texto) || !correctaInput){
+      document.getElementById('formAlertBody').textContent = 'Preencha o enunciado, as 4 alternativas e marque a correta em todas as perguntas.';
+      formAlert.classList.add('show');
+      return;
+    }
+    perguntas.push({
+      id: card.dataset.qid,
+      enunciado,
+      alternativas,
+      corretaId: alternativas[parseInt(correctaInput.value)].id
+    });
+  }
+
+  const provas = await loadProvas();
+  if (provaIdEditando){
+    const idx = provas.findIndex(p => p.id === provaIdEditando);
+    if (idx > -1){
+      provas[idx] = { ...provas[idx], materiaId, tituloProva: titulo, perguntas };
+    }
+  } else {
+    provas.push({
+      id: 'prova-' + Date.now(),
+      materiaId, tituloProva: titulo, professorId, perguntas
+    });
+  }
+  await saveProvas(provas);
+  showToast('Prova salva com sucesso.');
+});
+</script>
+</body>
+</html>

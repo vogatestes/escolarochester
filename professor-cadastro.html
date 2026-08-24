@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro de professor — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA;
+  --radius-lg:26px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; min-height:100vh; font-family:var(--font-body); color:var(--text); background:var(--ink);
+  display:flex; align-items:center; justify-content:center; padding:24px; position:relative;}
+body::before{content:''; position:fixed; inset:0;
+  background:radial-gradient(700px 500px at 85% 10%, rgba(184,145,43,0.16), transparent 60%),
+             radial-gradient(600px 500px at 10% 90%, rgba(31,95,91,0.28), transparent 60%);
+  pointer-events:none;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+.back-link{position:fixed; top:28px; left:28px; z-index:2; color:rgba(247,244,236,0.7); font-size:14px; font-weight:600;}
+.back-link:hover{color:#fff;}
+
+.card{position:relative; z-index:1; width:100%; max-width:460px; background:var(--paper); border-radius:var(--radius-lg);
+  padding:42px 40px 34px; box-shadow:0 40px 90px -30px rgba(0,0,0,0.55);}
+.head{text-align:center; margin-bottom:26px;}
+.head .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--teal-dark); font-weight:600;}
+.head h1{font-size:24px; font-weight:600; margin-top:10px;}
+.head p{color:var(--muted); font-size:14.5px; margin-top:8px;}
+
+.field{margin-bottom:18px;}
+.field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+.field .required{color:var(--error);}
+.field input{
+  width:100%; padding:14px 16px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:15px; font-family:var(--font-body); background:#fff; color:var(--text);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.field input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.field input.error{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,66,58,0.1);}
+.field-error{display:none; align-items:center; gap:6px; margin-top:7px; font-size:13px; color:var(--error);}
+.field-error.show{display:flex;}
+.field-error::before{content:'!'; width:15px;height:15px;border-radius:50%; background:var(--error); color:#fff; font-size:10.5px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+
+.form-alert{display:none; align-items:flex-start; gap:10px; background:var(--error-bg); border:1px solid rgba(179,66,58,0.25);
+  color:var(--error); padding:13px 14px; border-radius:10px; font-size:13.5px; margin-bottom:20px;}
+.form-alert.show{display:flex;}
+.form-alert strong{display:block; margin-bottom:2px; font-size:14px;}
+
+.btn-submit{width:100%; padding:15px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 14px 30px -12px rgba(31,95,91,0.55);}
+.btn-submit:disabled{opacity:0.75; cursor:not-allowed;}
+.spinner{width:16px;height:16px;border-radius:50%; border:2px solid rgba(255,255,255,0.35); border-top-color:#fff; display:none; animation:spin .7s linear infinite;}
+.btn-submit.loading .spinner{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.login-line{text-align:center; margin-top:22px; font-size:14px; color:var(--muted);}
+.login-line a{color:var(--gold); font-weight:700;}
+
+.form-view.hidden, .success-view{display:none;}
+.success-view.show{display:block; text-align:center;}
+.success-icon{width:64px;height:64px;border-radius:50%; background:rgba(87,217,163,0.15); color:var(--teal);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:28px;}
+.success-view h2{font-size:22px; font-weight:600;}
+.success-view p{color:var(--muted); font-size:14.5px; margin-top:10px;}
+.success-view .btn-submit{margin-top:24px; text-decoration:none;}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Voltar para o site</a>
+
+<div class="card">
+  <div class="form-view" id="formView">
+    <div class="head">
+      <span class="eyebrow">Sou professor(a)</span>
+      <h1>Criar cadastro de professor</h1>
+      <p>Depois de enviar, seu acesso fica pendente até o coordenador aprovar.</p>
+    </div>
+
+    <div class="form-alert" id="formAlert">
+      <div><strong id="formAlertTitle">Verifique os campos destacados</strong><span id="formAlertBody">Alguns campos precisam de atenção.</span></div>
+    </div>
+
+    <form id="cadastroForm" novalidate>
+      <div class="field">
+        <label for="nome">Nome completo <span class="required">*</span></label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome completo" autocomplete="name">
+        <div class="field-error" id="nomeError">O nome completo é obrigatório.</div>
+      </div>
+      <div class="field">
+        <label for="email">E-mail <span class="required">*</span></label>
+        <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email">
+        <div class="field-error" id="emailError">Digite um e-mail válido.</div>
+      </div>
+      <div class="field">
+        <label for="materia">Matéria/disciplina que leciona <span class="required">*</span></label>
+        <input type="text" id="materia" name="materia" placeholder="Ex: Ferramentas e prática">
+        <div class="field-error" id="materiaError">Informe a matéria ou disciplina.</div>
+      </div>
+      <div class="field">
+        <label for="senha">Criar senha <span class="required">*</span></label>
+        <input type="password" id="senha" name="senha" placeholder="Mínimo de 8 caracteres" autocomplete="new-password">
+        <div class="field-error" id="senhaError">A senha precisa ter no mínimo 8 caracteres.</div>
+      </div>
+      <div class="field">
+        <label for="confirmaSenha">Confirmar senha <span class="required">*</span></label>
+        <input type="password" id="confirmaSenha" name="confirmaSenha" placeholder="Repita a senha" autocomplete="new-password">
+        <div class="field-error" id="confirmaSenhaError">As senhas não coincidem.</div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="spinner"></span>
+        <span class="btn-label">Enviar cadastro</span>
+      </button>
+    </form>
+
+    <div class="login-line">Já tem cadastro aprovado? <a href="professor-login.html">Entrar</a></div>
+  </div>
+
+  <div class="success-view" id="successView">
+    <div class="success-icon">✓</div>
+    <h2>Cadastro enviado!</h2>
+    <p>Seu acesso está pendente. Assim que o coordenador aprovar seu cadastro, você poderá entrar normalmente.</p>
+    <a href="professor-login.html" class="btn-submit">Ir para o login</a>
+  </div>
+</div>
+
+<script>
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+async function loadProfessores(){
+  const stored = await storageGet('professores', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+async function saveProfessores(list){
+  await storageSet('professores', JSON.stringify(list), true);
+}
+
+const form = document.getElementById('cadastroForm');
+const nomeInput = document.getElementById('nome');
+const emailInput = document.getElementById('email');
+const materiaInput = document.getElementById('materia');
+const senhaInput = document.getElementById('senha');
+const confirmaInput = document.getElementById('confirmaSenha');
+const submitBtn = document.getElementById('submitBtn');
+const formAlert = document.getElementById('formAlert');
+
+function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+function clearErrors(){
+  [nomeInput, emailInput, materiaInput, senhaInput, confirmaInput].forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+  formAlert.classList.remove('show');
+}
+
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  clearErrors();
+  let hasError = false;
+
+  if (!nomeInput.value.trim()){ nomeInput.classList.add('error'); document.getElementById('nomeError').classList.add('show'); hasError = true; }
+  if (!emailInput.value.trim() || !isValidEmail(emailInput.value.trim())){ emailInput.classList.add('error'); document.getElementById('emailError').classList.add('show'); hasError = true; }
+  if (!materiaInput.value.trim()){ materiaInput.classList.add('error'); document.getElementById('materiaError').classList.add('show'); hasError = true; }
+  if (!senhaInput.value || senhaInput.value.length < 8){ senhaInput.classList.add('error'); document.getElementById('senhaError').classList.add('show'); hasError = true; }
+  if (!confirmaInput.value || confirmaInput.value !== senhaInput.value){ confirmaInput.classList.add('error'); document.getElementById('confirmaSenhaError').classList.add('show'); hasError = true; }
+
+  if (hasError){
+    document.getElementById('formAlertTitle').textContent = 'Verifique os campos destacados';
+    document.getElementById('formAlertBody').textContent = 'Alguns campos precisam de atenção antes de continuar.';
+    formAlert.classList.add('show');
+    return;
+  }
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  const professores = await loadProfessores();
+  const jaExiste = professores.some(p => p.email.toLowerCase() === emailInput.value.trim().toLowerCase());
+  if (jaExiste){
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    document.getElementById('formAlertTitle').textContent = 'E-mail já cadastrado';
+    document.getElementById('formAlertBody').textContent = 'Já existe um cadastro com este e-mail. Tente entrar ou use outro e-mail.';
+    formAlert.classList.add('show');
+    return;
+  }
+
+  professores.push({
+    id: 'prof-' + Date.now(),
+    nome: nomeInput.value.trim(),
+    email: emailInput.value.trim(),
+    senha: senhaInput.value,
+    materia: materiaInput.value.trim(),
+    status: 'pendente',
+    dataCadastro: new Date().toISOString()
+  });
+  await saveProfessores(professores);
+
+  setTimeout(() => {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    document.getElementById('formView').classList.add('hidden');
+    document.getElementById('successView').classList.add('show');
+  }, 700);
+});
+
+[nomeInput, emailInput, materiaInput, senhaInput, confirmaInput].forEach(el => el.addEventListener('input', () => el.classList.remove('error')));
+</script>
+</body>
+</html>

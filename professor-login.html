@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login do professor — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA; --warn:#8A5A0B; --warn-bg:#FBF0DD;
+  --radius-lg:26px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; min-height:100vh; font-family:var(--font-body); color:var(--text); background:var(--ink);
+  display:flex; align-items:center; justify-content:center; padding:24px; position:relative;}
+body::before{content:''; position:fixed; inset:0;
+  background:radial-gradient(700px 500px at 15% 10%, rgba(184,145,43,0.18), transparent 60%),
+             radial-gradient(600px 500px at 90% 90%, rgba(31,95,91,0.28), transparent 60%);
+  pointer-events:none;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+.back-link{position:fixed; top:28px; left:28px; z-index:2; color:rgba(247,244,236,0.7); font-size:14px; font-weight:600;}
+.back-link:hover{color:#fff;}
+
+.login-wrap{position:relative; z-index:1; width:100%; max-width:440px; background:var(--paper); border-radius:var(--radius-lg);
+  padding:44px 40px 36px; box-shadow:0 40px 90px -30px rgba(0,0,0,0.55);}
+.login-head{text-align:center; margin-bottom:28px;}
+.login-head .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--teal-dark); font-weight:600;}
+.login-head h1{font-size:24px; font-weight:600; margin-top:10px;}
+.login-head p{color:var(--muted); font-size:14.5px; margin-top:8px;}
+
+.field{margin-bottom:18px;}
+.field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+.field input{
+  width:100%; padding:14px 16px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:15px; font-family:var(--font-body); background:#fff; color:var(--text);
+}
+.field input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.field input.error{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,66,58,0.1);}
+
+.form-alert{display:none; align-items:flex-start; gap:10px; padding:13px 14px; border-radius:10px; font-size:13.5px; margin-bottom:20px;}
+.form-alert.show{display:flex;}
+.form-alert strong{display:block; margin-bottom:2px; font-size:14px;}
+.form-alert.error{background:var(--error-bg); border:1px solid rgba(179,66,58,0.25); color:var(--error);}
+.form-alert.warn{background:var(--warn-bg); border:1px solid rgba(138,90,11,0.25); color:var(--warn);}
+
+.btn-submit{width:100%; padding:15px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 14px 30px -12px rgba(31,95,91,0.55);}
+.btn-submit:disabled{opacity:0.75; cursor:not-allowed;}
+.spinner{width:16px;height:16px;border-radius:50%; border:2px solid rgba(255,255,255,0.35); border-top-color:#fff; display:none; animation:spin .7s linear infinite;}
+.btn-submit.loading .spinner{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.signup-line{text-align:center; margin-top:24px; font-size:14px; color:var(--muted);}
+.signup-line a{color:var(--gold); font-weight:700;}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Voltar para o site</a>
+
+<div class="login-wrap">
+  <div class="login-head">
+    <span class="eyebrow">Área do professor</span>
+    <h1>Entrar</h1>
+    <p>Entre com seu e-mail e senha de professor(a).</p>
+  </div>
+
+  <div class="form-alert" id="formAlert"><div><strong id="formAlertTitle"></strong><span id="formAlertBody"></span></div></div>
+
+  <form id="loginForm" novalidate>
+    <div class="field">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" name="senha" placeholder="Sua senha" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <span class="spinner"></span>
+      <span class="btn-label">Entrar</span>
+    </button>
+  </form>
+
+  <div class="signup-line">Ainda não tem cadastro? <a href="professor-cadastro.html">Criar cadastro</a></div>
+</div>
+
+<script>
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function loadProfessores(){
+  const stored = await storageGet('professores', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+
+const form = document.getElementById('loginForm');
+const emailInput = document.getElementById('email');
+const senhaInput = document.getElementById('senha');
+const submitBtn = document.getElementById('submitBtn');
+const formAlert = document.getElementById('formAlert');
+const formAlertTitle = document.getElementById('formAlertTitle');
+const formAlertBody = document.getElementById('formAlertBody');
+
+function showAlert(kind, title, body){
+  formAlert.className = 'form-alert show ' + kind;
+  formAlertTitle.textContent = title;
+  formAlertBody.textContent = body;
+}
+
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  formAlert.classList.remove('show');
+  emailInput.classList.remove('error'); senhaInput.classList.remove('error');
+
+  if (!emailInput.value.trim() || !senhaInput.value){
+    if (!emailInput.value.trim()) emailInput.classList.add('error');
+    if (!senhaInput.value) senhaInput.classList.add('error');
+    showAlert('error', 'Campos obrigatórios', 'Preencha o e-mail e a senha para continuar.');
+    return;
+  }
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  const professores = await loadProfessores();
+  const professor = professores.find(p => p.email.toLowerCase() === emailInput.value.trim().toLowerCase());
+
+  setTimeout(() => {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+
+    if (!professor || professor.senha !== senhaInput.value){
+      emailInput.classList.add('error'); senhaInput.classList.add('error');
+      showAlert('error', 'Não foi possível entrar', 'E-mail ou senha incorretos.');
+      return;
+    }
+    if (professor.status === 'pendente'){
+      showAlert('warn', 'Cadastro em análise', 'Seu acesso ainda está aguardando aprovação do coordenador. Tente novamente mais tarde.');
+      return;
+    }
+    if (professor.status === 'recusado'){
+      showAlert('error', 'Cadastro não aprovado', 'Seu cadastro não foi aprovado pelo coordenador. Entre em contato para mais informações.');
+      return;
+    }
+    window.location.href = 'professor-dashboard.html?id=' + encodeURIComponent(professor.id);
+  }, 700);
+});
+</script>
+</body>
+</html>
