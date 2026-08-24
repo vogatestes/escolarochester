@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel do coordenador — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA; --warn:#8A5A0B; --warn-bg:#FBF0DD;
+  --radius:14px; --radius-lg:22px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:var(--font-body); color:var(--text); background:var(--paper); min-height:100vh;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:24px 40px; border-bottom:1px solid var(--line);}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:18px;}
+.brand .dot{color:var(--gold); font-size:22px; line-height:0;}
+.logout-link{font-size:13.5px; font-weight:600; color:var(--muted);}
+.logout-link:hover{color:var(--ink);}
+
+.wrap{max-width:760px; margin:0 auto; padding:36px 24px 80px;}
+.wrap h1{font-size:26px; font-weight:600;}
+.wrap > p.sub{color:var(--muted); font-size:14.5px; margin-top:8px;}
+
+.locked-view{max-width:420px; margin:80px auto; text-align:center;}
+.locked-view .icon{font-size:34px; margin-bottom:14px;}
+.locked-view p{color:var(--muted); font-size:14.5px; margin-top:10px;}
+.locked-view input{
+  width:100%; margin-top:20px; padding:14px 16px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:15px; text-align:center;
+}
+.locked-view button{
+  width:100%; margin-top:14px; padding:14px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15px;
+}
+.locked-error{color:var(--error); font-size:13.5px; margin-top:10px; display:none;}
+.locked-error.show{display:block;}
+
+.section-title{font-family:var(--font-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--teal-dark);
+  font-weight:600; margin:34px 0 14px;}
+.section-title:first-of-type{margin-top:0;}
+
+.prof-card{
+  display:flex; align-items:center; gap:16px; background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  padding:16px 18px; margin-bottom:10px; flex-wrap:wrap;
+}
+.prof-avatar{width:40px;height:40px;border-radius:50%; background:var(--paper-2); color:var(--ink); font-weight:700; font-size:14px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.prof-info{flex:1; min-width:180px;}
+.prof-info .pname{font-size:15px; font-weight:600; color:var(--ink);}
+.prof-info .pmeta{font-size:13px; color:var(--muted); margin-top:2px;}
+.prof-actions{display:flex; gap:8px;}
+.prof-actions button{
+  padding:9px 16px; border-radius:999px; font-size:13px; font-weight:700; border:1.5px solid var(--line-strong); background:#fff; color:var(--text);
+}
+.btn-approve{background:var(--teal) !important; border-color:var(--teal) !important; color:#fff !important;}
+.btn-reject{color:var(--error) !important; border-color:rgba(179,66,58,0.4) !important;}
+.status-badge{font-family:var(--font-mono); font-size:11px; padding:5px 10px; border-radius:999px; font-weight:600;}
+.status-badge.aprovado{background:rgba(87,217,163,0.15); color:var(--teal-dark);}
+.status-badge.recusado{background:var(--error-bg); color:var(--error);}
+.empty-note{color:var(--muted); font-size:14px; padding:14px 0;}
+
+.panel-tabs{display:flex; gap:8px; margin-bottom:26px; border-bottom:1px solid var(--line);}
+.panel-tab{padding:11px 4px; margin-right:22px; background:none; border:none; font-weight:600; font-size:14.5px; color:var(--muted); border-bottom:2px solid transparent; position:relative; top:1px;}
+.panel-tab.active{color:var(--ink); border-color:var(--teal);}
+.panel-section{display:none;}
+.panel-section.active{display:block;}
+
+.content-hint{color:var(--muted); font-size:13.5px; margin-bottom:24px; max-width:560px;}
+.mod-edit-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); padding:22px 24px; margin-bottom:18px;}
+.mod-edit-card label{display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.04em; font-family:var(--font-mono);}
+.mod-name-input{
+  width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--line-strong); font-size:16px; font-weight:600;
+  font-family:var(--font-display); color:var(--ink); margin-bottom:18px;
+}
+.mod-name-input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.mat-edit-card{background:var(--paper-2); border-radius:12px; padding:16px 18px; margin-bottom:12px;}
+.mat-edit-card:last-child{margin-bottom:0;}
+.mat-edit-card input, .mat-edit-card textarea{
+  width:100%; padding:10px 12px; border-radius:8px; border:1.5px solid var(--line-strong); font-size:13.5px;
+  font-family:var(--font-body); margin-bottom:10px; background:#fff;
+}
+.mat-edit-card input:focus, .mat-edit-card textarea:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.mat-edit-card textarea{min-height:52px; resize:vertical;}
+.mat-edit-card input.mat-name{font-weight:600; font-size:14.5px;}
+.mat-edit-card input:last-child, .mat-edit-card textarea:last-child{margin-bottom:0;}
+
+.btn-save-content{
+  width:100%; padding:15px; border:none; border-radius:10px; background:var(--teal); color:#fff; font-weight:700; font-size:15px;
+  margin-top:6px;
+}
+.toast{
+  position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(10px); background:var(--ink); color:#fff;
+  padding:12px 20px; border-radius:10px; font-size:14px; z-index:100; opacity:0; pointer-events:none; transition:.25s ease;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot">•</span>Nome do Curso</div>
+  <a href="index.html" class="logout-link">Sair</a>
+</div>
+
+<div class="locked-view" id="lockedView">
+  <div class="icon">🔒</div>
+  <h1 style="font-size:22px;">Painel do coordenador</h1>
+  <p>Digite a senha do coordenador para acessar as aprovações.</p>
+  <input type="password" id="passInput" placeholder="Senha do coordenador">
+  <div class="locked-error" id="passError">Senha incorreta. Tente novamente.</div>
+  <button id="unlockBtn">Entrar</button>
+</div>
+
+<div class="wrap" id="panelView" style="display:none;">
+  <h1>Painel do coordenador</h1>
+  <p class="sub">Aprove professores e edite os módulos, matérias, descrições e vídeos do curso.</p>
+
+  <div class="panel-tabs">
+    <button class="panel-tab active" data-panel="prof">Professores</button>
+    <button class="panel-tab" data-panel="content">Conteúdo do curso</button>
+    <button class="panel-tab" data-panel="contact">Contato</button>
+  </div>
+
+  <div id="profPanel" class="panel-section active">
+    <div class="section-title">Pendentes de aprovação</div>
+    <div id="pendentesList"></div>
+
+    <div class="section-title">Aprovados</div>
+    <div id="aprovadosList"></div>
+
+    <div class="section-title">Recusados</div>
+    <div id="recusadosList"></div>
+  </div>
+
+  <div id="contentPanel" class="panel-section">
+    <p class="content-hint">Edite o nome dos módulos e matérias, a descrição de cada aula e o link do vídeo (YouTube, Vimeo ou outro link de embed). As mudanças aparecem para os alunos assim que forem salvas.</p>
+    <div id="modulosEditList"></div>
+    <button class="btn-save-content" id="saveContentBtn">Salvar estrutura do curso</button>
+  </div>
+
+  <div id="contactPanel" class="panel-section">
+    <p class="content-hint">Esse número recebe as mensagens de novos alunos que se inscrevem (via WhatsApp) e também é usado como contato geral para dúvidas no rodapé do site.</p>
+    <div class="mod-edit-card">
+      <label>Número de WhatsApp (com DDI e DDD, só números)</label>
+      <input type="text" id="whatsappNumberInput" class="mod-name-input" placeholder="Ex: 5511999999999">
+      <p style="font-size:12.5px; color:var(--muted); margin-top:-8px;">Formato: código do país + DDD + número, sem espaços, traços ou parênteses. Ex: Brasil, São Paulo, 99999-9999 → 5511999999999</p>
+    </div>
+    <button class="btn-save-content" id="saveContactBtn">Salvar número de contato</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+const DEFAULT_ADMIN_PASSWORD = 'admin123';
+async function getStoredPassword(){
+  const stored = await storageGet('admin_password', true);
+  return stored || DEFAULT_ADMIN_PASSWORD;
+}
+async function loadProfessores(){
+  const stored = await storageGet('professores', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+async function saveProfessores(list){
+  await storageSet('professores', JSON.stringify(list), true);
+}
+
+function initials(nome){
+  return nome.trim().split(/\s+/).slice(0,2).map(p => p[0].toUpperCase()).join('');
+}
+
+async function renderPanel(){
+  const professores = await loadProfessores();
+  const pendentes = professores.filter(p => p.status === 'pendente');
+  const aprovados = professores.filter(p => p.status === 'aprovado');
+  const recusados = professores.filter(p => p.status === 'recusado');
+
+  const pendentesList = document.getElementById('pendentesList');
+  const aprovadosList = document.getElementById('aprovadosList');
+  const recusadosList = document.getElementById('recusadosList');
+  pendentesList.innerHTML = ''; aprovadosList.innerHTML = ''; recusadosList.innerHTML = '';
+
+  if (pendentes.length === 0){
+    pendentesList.innerHTML = '<div class="empty-note">Nenhum cadastro pendente no momento.</div>';
+  }
+  pendentes.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'prof-card';
+    card.innerHTML =
+      '<div class="prof-avatar">' + initials(p.nome) + '</div>' +
+      '<div class="prof-info"><div class="pname">' + p.nome + '</div><div class="pmeta">' + p.email + ' · ' + p.materia + '</div></div>' +
+      '<div class="prof-actions"><button class="btn-approve" data-action="aprovar" data-id="' + p.id + '">Aprovar</button><button class="btn-reject" data-action="recusar" data-id="' + p.id + '">Recusar</button></div>';
+    pendentesList.appendChild(card);
+  });
+
+  if (aprovados.length === 0){
+    aprovadosList.innerHTML = '<div class="empty-note">Nenhum professor aprovado ainda.</div>';
+  }
+  aprovados.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'prof-card';
+    card.innerHTML =
+      '<div class="prof-avatar">' + initials(p.nome) + '</div>' +
+      '<div class="prof-info"><div class="pname">' + p.nome + '</div><div class="pmeta">' + p.email + ' · ' + p.materia + '</div></div>' +
+      '<span class="status-badge aprovado">Aprovado</span>';
+    aprovadosList.appendChild(card);
+  });
+
+  if (recusados.length === 0){
+    recusadosList.innerHTML = '<div class="empty-note">Nenhum cadastro recusado.</div>';
+  }
+  recusados.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'prof-card';
+    card.innerHTML =
+      '<div class="prof-avatar">' + initials(p.nome) + '</div>' +
+      '<div class="prof-info"><div class="pname">' + p.nome + '</div><div class="pmeta">' + p.email + ' · ' + p.materia + '</div></div>' +
+      '<span class="status-badge recusado">Recusado</span>';
+    recusadosList.appendChild(card);
+  });
+
+  document.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      const action = btn.getAttribute('data-action');
+      const list = await loadProfessores();
+      const prof = list.find(p => p.id === id);
+      if (prof) prof.status = action === 'aprovar' ? 'aprovado' : 'recusado';
+      await saveProfessores(list);
+      renderPanel();
+    });
+  });
+}
+
+document.getElementById('unlockBtn').addEventListener('click', async () => {
+  const pass = document.getElementById('passInput').value;
+  const stored = await getStoredPassword();
+  if (pass === stored){
+    document.getElementById('lockedView').style.display = 'none';
+    document.getElementById('panelView').style.display = 'block';
+    renderPanel();
+    renderContentPanel();
+    renderContactPanel();
+  } else {
+    document.getElementById('passError').classList.add('show');
+  }
+});
+document.getElementById('passInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('unlockBtn').click();
+});
+
+document.querySelectorAll('.panel-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.panel + 'Panel').classList.add('active');
+  });
+});
+
+/* ============ CONTEÚDO DO CURSO (módulos, matérias, descrição e vídeo) ============ */
+const DEFAULT_CURSO_ESTRUTURA = {
+  id:'curso-1', nome:'Nome do Curso',
+  modulos:[
+    { id:'mod-1', nome:'Fundamentos', materias:[
+        { id:'mod-1-mat-1', nome:'Introdução e visão geral', duracao:'08 min', descricao:'', videoUrl:'' },
+        { id:'mod-1-mat-2', nome:'Conceitos essenciais', duracao:'14 min', descricao:'', videoUrl:'' },
+        { id:'mod-1-mat-3', nome:'Ferramentas utilizadas no curso', duracao:'10 min', descricao:'', videoUrl:'' },
+        { id:'mod-1-mat-4', nome:'Exercício prático de fixação', duracao:'12 min', descricao:'', videoUrl:'' }
+    ]},
+    { id:'mod-2', nome:'Ferramentas e prática', materias:[
+        { id:'mod-2-mat-1', nome:'Configuração do ambiente/ferramentas', duracao:'09 min', descricao:'', videoUrl:'' },
+        { id:'mod-2-mat-2', nome:'Prática guiada', duracao:'16 min', descricao:'', videoUrl:'' },
+        { id:'mod-2-mat-3', nome:'Estudo de caso', duracao:'11 min', descricao:'', videoUrl:'' },
+        { id:'mod-2-mat-4', nome:'Erros comuns e como evitá-los', duracao:'07 min', descricao:'', videoUrl:'' },
+        { id:'mod-2-mat-5', nome:'Exercício prático', duracao:'13 min', descricao:'', videoUrl:'' }
+    ]},
+    { id:'mod-3', nome:'Projeto aplicado', materias:[
+        { id:'mod-3-mat-1', nome:'Planejamento do projeto', duracao:'10 min', descricao:'', videoUrl:'' },
+        { id:'mod-3-mat-2', nome:'Desenvolvimento — parte 1', duracao:'18 min', descricao:'', videoUrl:'' },
+        { id:'mod-3-mat-3', nome:'Desenvolvimento — parte 2', duracao:'18 min', descricao:'', videoUrl:'' },
+        { id:'mod-3-mat-4', nome:'Revisão e ajustes finais', duracao:'09 min', descricao:'', videoUrl:'' }
+    ]},
+    { id:'mod-4', nome:'Avançado', materias:[
+        { id:'mod-4-mat-1', nome:'Tópico avançado 1', duracao:'14 min', descricao:'', videoUrl:'' },
+        { id:'mod-4-mat-2', nome:'Tópico avançado 2', duracao:'14 min', descricao:'', videoUrl:'' },
+        { id:'mod-4-mat-3', nome:'Tópico avançado 3', duracao:'15 min', descricao:'', videoUrl:'' },
+        { id:'mod-4-mat-4', nome:'Boas práticas de mercado', duracao:'11 min', descricao:'', videoUrl:'' },
+        { id:'mod-4-mat-5', nome:'Exercício prático', duracao:'12 min', descricao:'', videoUrl:'' }
+    ]},
+    { id:'mod-5', nome:'[Nome do módulo 5]', materias:[
+        { id:'mod-5-mat-1', nome:'[Conteúdo a definir]', duracao:'— min', descricao:'', videoUrl:'' }
+    ]},
+    { id:'mod-6', nome:'[Nome do módulo 6]', materias:[
+        { id:'mod-6-mat-1', nome:'[Conteúdo a definir]', duracao:'— min', descricao:'', videoUrl:'' }
+    ]}
+  ]
+};
+
+async function loadCursoEstrutura(){
+  const stored = await storageGet('curso_estrutura', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido, cai para o padrão */ } }
+  await storageSet('curso_estrutura', JSON.stringify(DEFAULT_CURSO_ESTRUTURA), true);
+  return JSON.parse(JSON.stringify(DEFAULT_CURSO_ESTRUTURA));
+}
+async function saveCursoEstrutura(curso){
+  await storageSet('curso_estrutura', JSON.stringify(curso), true);
+}
+
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+async function renderContentPanel(){
+  const curso = await loadCursoEstrutura();
+  const list = document.getElementById('modulosEditList');
+  list.innerHTML = '';
+
+  curso.modulos.forEach((mod, mi) => {
+    const card = document.createElement('div');
+    card.className = 'mod-edit-card';
+    card.dataset.modId = mod.id;
+    card.innerHTML =
+      '<label>Nome do módulo ' + (mi + 1) + '</label>' +
+      '<input type="text" class="mod-name-input mod-nome" value="' + mod.nome.replace(/"/g,'&quot;') + '">' +
+      mod.materias.map((mat, i) => (
+        '<div class="mat-edit-card" data-mat-id="' + mat.id + '">' +
+          '<label>Matéria ' + (i + 1) + ' — nome</label>' +
+          '<input type="text" class="mat-nome" value="' + mat.nome.replace(/"/g,'&quot;') + '">' +
+          '<label>Descrição</label>' +
+          '<textarea class="mat-descricao" placeholder="Descrição/resumo da aula...">' + (mat.descricao || '') + '</textarea>' +
+          '<label>Link do vídeo (YouTube, Vimeo ou embed)</label>' +
+          '<input type="text" class="mat-video" placeholder="https://youtube.com/watch?v=..." value="' + (mat.videoUrl || '').replace(/"/g,'&quot;') + '">' +
+        '</div>'
+      )).join('');
+    list.appendChild(card);
+  });
+}
+
+document.getElementById('saveContentBtn').addEventListener('click', async () => {
+  const curso = await loadCursoEstrutura();
+  document.querySelectorAll('.mod-edit-card').forEach(card => {
+    const mod = curso.modulos.find(m => m.id === card.dataset.modId);
+    if (!mod) return;
+    mod.nome = card.querySelector('.mod-nome').value.trim() || mod.nome;
+    card.querySelectorAll('.mat-edit-card').forEach(matCard => {
+      const mat = mod.materias.find(m => m.id === matCard.dataset.matId);
+      if (!mat) return;
+      mat.nome = matCard.querySelector('.mat-nome').value.trim() || mat.nome;
+      mat.descricao = matCard.querySelector('.mat-descricao').value.trim();
+      mat.videoUrl = matCard.querySelector('.mat-video').value.trim();
+    });
+  });
+  await saveCursoEstrutura(curso);
+  showToast('Estrutura do curso salva com sucesso.');
+});
+
+/* ============ CONTATO (número de WhatsApp para inscrições e dúvidas) ============ */
+const DEFAULT_WHATSAPP_NUMBER = '5500000000000';
+
+async function loadWhatsappNumber(){
+  const stored = await storageGet('contato_whatsapp', true);
+  return stored || DEFAULT_WHATSAPP_NUMBER;
+}
+async function saveWhatsappNumber(numero){
+  await storageSet('contato_whatsapp', numero, true);
+}
+
+async function renderContactPanel(){
+  const numero = await loadWhatsappNumber();
+  document.getElementById('whatsappNumberInput').value = numero === DEFAULT_WHATSAPP_NUMBER ? '' : numero;
+}
+
+document.getElementById('saveContactBtn').addEventListener('click', async () => {
+  const input = document.getElementById('whatsappNumberInput');
+  const numero = input.value.replace(/\D/g, '');
+  if (!numero || numero.length < 10){
+    showToast('Digite um número de WhatsApp válido (com DDI e DDD).');
+    return;
+  }
+  await saveWhatsappNumber(numero);
+  input.value = numero;
+  showToast('Número de contato salvo com sucesso.');
+});
+</script>
+</body>
+</html>
