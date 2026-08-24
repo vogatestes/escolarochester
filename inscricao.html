@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscrição — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --ink-2:#1B2040; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA; --success:#1F5F5B;
+  --radius:16px; --radius-lg:26px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:var(--font-body); color:var(--text); background:var(--paper); min-height:100vh;}
+h1,h2,h3{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:22px 32px; border-bottom:1px solid var(--line);}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:19px;}
+.brand .dot{color:var(--gold); font-size:24px; line-height:0;}
+.back-link{font-size:14px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:6px;}
+.back-link:hover{color:var(--ink);}
+
+.progress-track{display:flex; align-items:center; justify-content:center; gap:8px; padding:22px 20px 0;}
+.progress-step{display:flex; align-items:center; gap:8px;}
+.progress-step .circle{
+  width:26px;height:26px;border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:12px; font-weight:600; border:1.5px solid var(--line-strong); color:var(--muted);
+}
+.progress-step.active .circle{background:var(--teal); border-color:var(--teal); color:#fff;}
+.progress-step.done .circle{background:var(--ink); border-color:var(--ink); color:var(--gold-soft);}
+.progress-step span.label{font-size:12.5px; color:var(--muted); font-weight:600;}
+.progress-step.active span.label{color:var(--ink);}
+.progress-line{width:40px; height:1.5px; background:var(--line-strong);}
+
+.wrap{max-width:1080px; margin:0 auto; padding:48px 24px 100px; display:grid; grid-template-columns:1fr 1.15fr; gap:40px; align-items:flex-start;}
+
+.summary-card{background:var(--ink); color:#fff; border-radius:var(--radius-lg); padding:36px 32px; position:sticky; top:24px; overflow:hidden; position:relative;}
+.summary-card::before{content:'';position:absolute; top:-30%; right:-15%; width:240px;height:240px;border-radius:50%; background:radial-gradient(circle, rgba(184,145,43,0.25), transparent 70%);}
+.summary-card .tag{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; color:var(--gold-soft); text-transform:uppercase;}
+.summary-card h2{color:#fff; font-size:24px; margin-top:10px; font-weight:600;}
+.summary-list{margin-top:22px; display:flex; flex-direction:column; gap:11px;}
+.summary-list div{display:flex; gap:10px; font-size:14px; color:rgba(255,255,255,0.85); align-items:flex-start;}
+.summary-list div::before{content:'✓'; color:#57D9A3; font-weight:700; flex-shrink:0;}
+.summary-price{margin-top:26px; padding-top:22px; border-top:1px solid rgba(255,255,255,0.14);}
+.summary-price .old{text-decoration:line-through; color:rgba(255,255,255,0.5); font-size:14px;}
+.summary-price .main{display:flex; align-items:baseline; gap:8px; margin-top:6px;}
+.summary-price .main .amount{font-family:var(--font-display); font-size:34px; font-weight:600;}
+.summary-price .main .per{font-size:13.5px; color:rgba(255,255,255,0.65);}
+.summary-price .cash{font-size:13.5px; color:rgba(255,255,255,0.75); margin-top:6px;}
+.summary-badges{display:flex; gap:8px; margin-top:18px; flex-wrap:wrap;}
+.summary-badges span{font-family:var(--font-mono); font-size:11px; background:rgba(87,217,163,0.15); color:#57D9A3; padding:6px 10px; border-radius:999px;}
+
+.form-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); padding:38px 36px; box-shadow:0 30px 70px -35px rgba(18,22,42,0.3);}
+.form-card h1{font-size:26px; font-weight:600;}
+.form-card > p.sub{color:var(--muted); font-size:14.5px; margin-top:8px;}
+.field{margin-top:20px;}
+.field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+.field .required{color:var(--error);}
+.field input{
+  width:100%; padding:14px 16px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:15px; font-family:var(--font-body); background:#fff; color:var(--text);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.field input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.field input.error{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,66,58,0.1);}
+.field-error{display:none; align-items:center; gap:6px; margin-top:7px; font-size:13px; color:var(--error);}
+.field-error.show{display:flex;}
+.field-error::before{content:'!'; width:15px;height:15px;border-radius:50%; background:var(--error); color:#fff; font-size:10.5px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+
+.plan-group{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;}
+.plan-option{position:relative;}
+.plan-option input{position:absolute; opacity:0;}
+.plan-option label{
+  display:block; border:1.5px solid var(--line-strong); border-radius:12px; padding:16px 18px; cursor:pointer;
+  transition:border-color .15s ease, background .15s ease;
+}
+.plan-option label .ptitle{font-weight:700; font-size:14.5px; color:var(--ink);}
+.plan-option label .pdesc{font-size:12.5px; color:var(--muted); margin-top:3px; display:block;}
+.plan-option input:checked + label{border-color:var(--teal); background:rgba(31,95,91,0.06);}
+.plan-option input:focus-visible + label{outline:3px solid var(--gold); outline-offset:2px;}
+
+.form-alert{
+  display:none; align-items:flex-start; gap:10px; background:var(--error-bg); border:1px solid rgba(179,66,58,0.25);
+  color:var(--error); padding:13px 14px; border-radius:10px; font-size:13.5px; margin-top:22px;
+}
+.form-alert.show{display:flex;}
+.form-alert strong{display:block; margin-bottom:2px; font-size:14px;}
+
+.btn-submit{
+  width:100%; margin-top:26px; padding:16px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15.5px; display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 14px 30px -12px rgba(31,95,91,0.55);}
+.btn-submit:disabled{opacity:0.75; cursor:not-allowed;}
+.spinner{width:16px;height:16px;border-radius:50%; border:2px solid rgba(255,255,255,0.35); border-top-color:#fff; display:none; animation:spin .7s linear infinite;}
+.btn-submit.loading .spinner{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.form-note{font-size:12.5px; color:var(--muted); margin-top:14px; text-align:center;}
+
+/* success panel (WhatsApp redirect step) */
+.success-panel{display:none; text-align:center; padding:20px 6px 4px;}
+.success-panel.show{display:block;}
+.form-card.success .form-fields{display:none;}
+.success-icon{
+  width:64px;height:64px;border-radius:50%; background:rgba(87,217,163,0.15); color:var(--teal);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:28px;
+}
+.success-panel h2{font-size:22px; font-weight:600;}
+.success-panel p{color:var(--muted); font-size:14.5px; margin-top:10px; max-width:420px; margin-left:auto; margin-right:auto;}
+.wa-btn{
+  display:inline-flex; align-items:center; gap:10px; background:#25D366; color:#0b2e17; font-weight:700;
+  padding:15px 26px; border-radius:999px; margin-top:22px; font-size:15px; transition:transform .15s ease;
+}
+.wa-btn:hover{transform:translateY(-2px);}
+.next-step-note{
+  margin-top:28px; padding:16px 18px; background:var(--paper-2); border-radius:12px; text-align:left; font-size:13.5px; color:var(--muted);
+}
+.next-step-note strong{color:var(--ink); display:block; margin-bottom:4px; font-size:14px;}
+.demo-link{display:inline-block; margin-top:12px; font-size:12.5px; font-family:var(--font-mono); color:var(--teal-dark); border-bottom:1px dashed var(--teal-dark);}
+.demo-link:hover{color:var(--teal);}
+
+@media (max-width:880px){
+  .wrap{grid-template-columns:1fr; padding-top:32px;}
+  .summary-card{position:static;}
+  .progress-step span.label{display:none;}
+}
+@media (max-width:480px){
+  .form-card{padding:28px 22px;}
+  .plan-group{grid-template-columns:1fr;}
+  .topbar{padding:18px 20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot">•</span>Nome do Curso</div>
+  <a href="index.html" class="back-link">← Voltar para o site</a>
+</div>
+
+<div class="progress-track">
+  <div class="progress-step done"><div class="circle">✓</div><span class="label">Curso</span></div>
+  <div class="progress-line"></div>
+  <div class="progress-step active"><div class="circle">2</div><span class="label">Inscrição</span></div>
+  <div class="progress-line"></div>
+  <div class="progress-step"><div class="circle">3</div><span class="label">WhatsApp</span></div>
+  <div class="progress-line"></div>
+  <div class="progress-step"><div class="circle">4</div><span class="label">Acesso</span></div>
+</div>
+
+<div class="wrap">
+  <div class="summary-card">
+    <span class="tag">Resumo da inscrição</span>
+    <h2 data-key="insc-summary-title">Nome do Curso</h2>
+    <div class="summary-list">
+      <div data-key="insc-summary-1">Todos os módulos da grade curricular</div>
+      <div data-key="insc-summary-2">Acesso à plataforma por 18 meses</div>
+      <div data-key="insc-summary-3">100% digital, no seu ritmo</div>
+    </div>
+    <div class="summary-price">
+      <div class="old" data-key="price-old">De R$ 4.200,00</div>
+      <div class="main"><span class="amount" data-key="price-amount">R$ 170</span><span class="per" data-key="price-per">/mês</span></div>
+      <div class="cash" data-key="price-cash-resumo">12x de R$ 170 ou R$ 2.040,00 à vista</div>
+    </div>
+    <div class="summary-badges">
+      <span>100% digital</span>
+      <span>18 meses de acesso</span>
+    </div>
+  </div>
+
+  <div class="form-card" id="formCard">
+    <div class="form-fields">
+      <h1 data-key="insc-form-title">Finalize sua inscrição</h1>
+      <p class="sub" data-key="insc-form-sub">Preencha seus dados. No próximo passo você será direcionado ao WhatsApp para confirmar o pagamento.</p>
+
+      <form id="inscForm" novalidate>
+        <div class="field">
+          <label for="nome">Nome completo <span class="required">*</span></label>
+          <input type="text" id="nome" name="nome" placeholder="Seu nome completo" autocomplete="name">
+          <div class="field-error" id="nomeError">O nome completo é obrigatório.</div>
+        </div>
+        <div class="field">
+          <label for="email">E-mail <span class="required">*</span></label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email">
+          <div class="field-error" id="emailError">Digite um e-mail válido.</div>
+        </div>
+        <div class="field">
+          <label for="whatsapp">WhatsApp <span class="required">*</span></label>
+          <input type="tel" id="whatsapp" name="whatsapp" placeholder="(00) 00000-0000" autocomplete="tel">
+          <div class="field-error" id="whatsappError">Digite um número de WhatsApp válido.</div>
+        </div>
+
+        <div class="field">
+          <label>Forma de pagamento <span class="required">*</span></label>
+          <div class="plan-group">
+            <div class="plan-option">
+              <input type="radio" name="plano" id="planoParcelado" value="parcelado" checked>
+              <label for="planoParcelado"><span class="ptitle">12x de R$ 170</span><span class="pdesc">Parcelado no cartão</span></label>
+            </div>
+            <div class="plan-option">
+              <input type="radio" name="plano" id="planoAvista" value="avista">
+              <label for="planoAvista"><span class="ptitle">R$ 2.040,00</span><span class="pdesc">À vista · economize R$ 2.160,00</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-alert" id="formAlert">
+          <div><strong id="formAlertTitle">Verifique os campos destacados</strong><span id="formAlertBody">Alguns campos precisam de atenção antes de continuar.</span></div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span class="spinner"></span>
+          <span class="btn-label">Enviar inscrição</span>
+        </button>
+        <p class="form-note" data-key="insc-form-note">Ao enviar, você verá a confirmação da sua inscrição e o botão para falar com nossa equipe pelo WhatsApp.</p>
+      </form>
+    </div>
+
+    <div class="success-panel" id="successPanel">
+      <div class="success-icon">✓</div>
+      <h2 data-key="insc-success-title">Inscrição enviada!</h2>
+      <p data-key="insc-success-body">Recebemos seus dados com sucesso. Agora é só falar com nossa equipe pelo WhatsApp para finalizar o pagamento e garantir sua vaga.</p>
+      <a href="#" class="wa-btn" id="waButton" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.29-.15-1.72-.85-1.99-.94-.27-.1-.46-.15-.66.15-.2.29-.75.94-.92 1.13-.17.2-.34.22-.63.07-.29-.15-1.22-.45-2.32-1.43-.86-.76-1.44-1.71-1.6-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.07-.15-.66-1.59-.9-2.18-.24-.57-.48-.5-.66-.5-.17-.01-.37-.01-.56-.01-.2 0-.51.07-.78.37-.27.29-1.02 1-1.02 2.43 0 1.43 1.05 2.81 1.19 3 .15.2 2.06 3.14 4.99 4.4.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.72-.7 1.97-1.38.24-.68.24-1.26.17-1.38-.07-.12-.26-.2-.55-.34z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.71.44 3.37 1.29 4.83L2 22l5.4-1.39c1.41.77 3 1.18 4.62 1.18h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2zm0 18.1h-.01c-1.44 0-2.86-.38-4.09-1.11l-.29-.17-3.2.83.86-3.12-.19-.32a8.19 8.19 0 0 1-1.26-4.31c0-4.52 3.68-8.2 8.2-8.2a8.15 8.15 0 0 1 5.79 2.4 8.13 8.13 0 0 1 2.4 5.8c0 4.52-3.68 8.2-8.2 8.2z"/></svg>
+        <span>Falar com nossa equipe pelo WhatsApp</span>
+      </a>
+      <div class="next-step-note">
+        <strong data-key="insc-next-title">O que acontece depois?</strong>
+        <span data-key="insc-next-body">Após a confirmação do pagamento pelo WhatsApp, seu cadastro será liberado e você receberá um link para criar sua senha e acessar a plataforma.</span>
+        <br>
+        <a href="cadastro.html" class="demo-link">→ Simular liberação de cadastro (demonstração)</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-bar" id="adminBar" style="display:none; position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:#fff; z-index:999; padding:12px 14px; border-radius:999px; align-items:center; gap:10px; box-shadow:0 15px 40px -10px rgba(0,0,0,0.5); font-size:14px;">
+  <span style="font-family:var(--font-mono); font-size:12px; color:var(--gold-soft); padding-left:6px;">Modo edição ativo</span>
+  <button id="saveBtn" style="border:none;border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600; background:var(--teal); color:#fff;">Salvar alterações</button>
+  <button id="exitBtn" style="border:1px solid rgba(255,255,255,0.3);border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600; background:transparent; color:#fff;">Sair</button>
+</div>
+<div class="admin-toast" id="adminToast" style="position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(10px); background:var(--teal-dark); color:#fff; padding:10px 18px; border-radius:10px; font-size:13.5px; z-index:1000; opacity:0; pointer-events:none; transition:.25s ease;"></div>
+
+<script>
+const form = document.getElementById('inscForm');
+const nomeInput = document.getElementById('nome');
+const emailInput = document.getElementById('email');
+const whatsappInput = document.getElementById('whatsapp');
+const submitBtn = document.getElementById('submitBtn');
+const formAlert = document.getElementById('formAlert');
+const formCard = document.getElementById('formCard');
+const successPanel = document.getElementById('successPanel');
+const waButton = document.getElementById('waButton');
+
+function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function isValidPhone(v){ return v.replace(/\D/g,'').length >= 10; }
+
+function clearErrors(){
+  [nomeInput, emailInput, whatsappInput].forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+  formAlert.classList.remove('show');
+}
+
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  clearErrors();
+  let hasError = false;
+
+  if (!nomeInput.value.trim()){
+    nomeInput.classList.add('error');
+    document.getElementById('nomeError').classList.add('show');
+    hasError = true;
+  }
+  if (!emailInput.value.trim()){
+    emailInput.classList.add('error');
+    document.getElementById('emailError').textContent = 'O e-mail é obrigatório.';
+    document.getElementById('emailError').classList.add('show');
+    hasError = true;
+  } else if (!isValidEmail(emailInput.value.trim())){
+    emailInput.classList.add('error');
+    document.getElementById('emailError').textContent = 'Digite um e-mail válido.';
+    document.getElementById('emailError').classList.add('show');
+    hasError = true;
+  }
+  if (!whatsappInput.value.trim()){
+    whatsappInput.classList.add('error');
+    document.getElementById('whatsappError').textContent = 'O WhatsApp é obrigatório.';
+    document.getElementById('whatsappError').classList.add('show');
+    hasError = true;
+  } else if (!isValidPhone(whatsappInput.value.trim())){
+    whatsappInput.classList.add('error');
+    document.getElementById('whatsappError').textContent = 'Digite um número de WhatsApp válido.';
+    document.getElementById('whatsappError').classList.add('show');
+    hasError = true;
+  }
+
+  if (hasError){
+    document.getElementById('formAlertTitle').textContent = 'Verifique os campos destacados';
+    document.getElementById('formAlertBody').textContent = 'Alguns campos precisam de atenção antes de continuar.';
+    formAlert.classList.add('show');
+    return;
+  }
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  setTimeout(() => {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+
+    const plano = document.querySelector('input[name="plano"]:checked').value;
+    const planoTexto = plano === 'avista' ? 'à vista (R$ 2.040,00)' : 'parcelado em 12x de R$ 170';
+    // Número de WhatsApp de destino — placeholder, substituir pelo número real da instituição.
+    const numeroWhatsApp = '5500000000000';
+    const mensagem = 'Olá! Meu nome é ' + nomeInput.value.trim() + '. Quero finalizar minha inscrição no curso [Nome do Curso], no plano ' + planoTexto + '. Meu e-mail é ' + emailInput.value.trim() + '.';
+    const link = 'https://wa.me/' + numeroWhatsApp + '?text=' + encodeURIComponent(mensagem);
+
+    waButton.setAttribute('href', link);
+    formCard.classList.add('success');
+    successPanel.classList.add('show');
+    successPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 1000);
+});
+
+[nomeInput, emailInput, whatsappInput].forEach(el => {
+  el.addEventListener('input', () => {
+    el.classList.remove('error');
+  });
+});
+
+/* ============ MODO DE EDIÇÃO DO COORDENADOR (compartilhado com a landing page) ============ */
+const DEFAULT_ADMIN_PASSWORD = 'admin123'; // senha padrão inicial do coordenador — recomenda-se alterar
+const adminBar = document.getElementById('adminBar');
+const adminToast = document.getElementById('adminToast');
+
+function showToast(msg){
+  adminToast.textContent = msg;
+  adminToast.style.opacity = '1';
+  adminToast.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(()=>{ adminToast.style.opacity = '0'; adminToast.style.transform = 'translateX(-50%) translateY(10px)'; }, 2200);
+}
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+async function getStoredPassword(){
+  const stored = await storageGet('admin_password', true);
+  return stored || DEFAULT_ADMIN_PASSWORD;
+}
+async function loadContent(){
+  const stored = await storageGet('site_content', true);
+  if (!stored) return;
+  try {
+    const data = JSON.parse(stored);
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const k = el.getAttribute('data-key');
+      if (data[k] !== undefined) el.innerHTML = data[k];
+    });
+  } catch(e){ /* conteúdo salvo corrompido, ignora */ }
+}
+async function saveContent(){
+  let existing = {};
+  const stored = await storageGet('site_content', true);
+  if (stored){
+    try { existing = JSON.parse(stored); } catch(e){ /* primeira gravação válida */ }
+  }
+  document.querySelectorAll('[data-key]').forEach(el => { existing[el.getAttribute('data-key')] = el.innerHTML; });
+  await storageSet('site_content', JSON.stringify(existing), true);
+  showToast('Alterações salvas com sucesso.');
+}
+function enterAdminMode(){
+  document.body.classList.add('admin-mode');
+  document.querySelectorAll('[data-key]').forEach(el => el.setAttribute('contenteditable', 'true'));
+  adminBar.style.display = 'flex';
+}
+function exitAdminMode(){
+  document.body.classList.remove('admin-mode');
+  document.querySelectorAll('[data-key]').forEach(el => el.removeAttribute('contenteditable'));
+  adminBar.style.display = 'none';
+}
+// Ativação do modo de edição: adicione ?coordenador=1 na URL, ou copie o gatilho do rodapé da landing page.
+if (new URLSearchParams(window.location.search).get('coordenador') === '1'){
+  const pass = prompt('Digite a senha do coordenador:');
+  getStoredPassword().then(stored => {
+    if (pass === stored) { enterAdminMode(); showToast('Modo de edição ativado.'); }
+    else if (pass !== null) alert('Senha incorreta.');
+  });
+}
+document.getElementById('saveBtn').addEventListener('click', saveContent);
+document.getElementById('exitBtn').addEventListener('click', exitAdminMode);
+loadContent();
+</script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ative seu acesso — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA;
+  --radius-lg:26px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; min-height:100vh; font-family:var(--font-body); color:var(--text); background:var(--ink);
+  display:flex; align-items:center; justify-content:center; padding:24px; position:relative;}
+body::before{content:''; position:fixed; inset:0;
+  background:radial-gradient(700px 500px at 85% 10%, rgba(87,217,163,0.16), transparent 60%),
+             radial-gradient(600px 500px at 10% 90%, rgba(184,145,43,0.2), transparent 60%);
+  pointer-events:none;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+.card{position:relative; z-index:1; width:100%; max-width:460px; background:var(--paper); border-radius:var(--radius-lg);
+  padding:42px 40px 34px; box-shadow:0 40px 90px -30px rgba(0,0,0,0.55);}
+.status-badge{
+  display:inline-flex; align-items:center; gap:8px; background:rgba(87,217,163,0.15); color:var(--teal-dark);
+  padding:8px 14px; border-radius:999px; font-size:12.5px; font-family:var(--font-mono); font-weight:600;
+}
+.status-badge .dot{width:8px;height:8px;border-radius:50%; background:#1F5F5B;}
+.head{text-align:center; margin:22px 0 26px;}
+.head h1{font-size:26px; font-weight:600;}
+.head p{color:var(--muted); font-size:14.5px; margin-top:8px;}
+
+.locked-field{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--paper-2);
+  border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:20px; font-size:14px; color:var(--muted);
+}
+.locked-field strong{color:var(--ink); font-weight:600;}
+
+.field{margin-bottom:18px;}
+.field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:7px;}
+.field .required{color:var(--error);}
+.input-wrap{position:relative;}
+.input-wrap input{
+  width:100%; padding:14px 16px; border-radius:10px; border:1.5px solid var(--line-strong);
+  font-size:15px; font-family:var(--font-body); background:#fff; color:var(--text);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.input-wrap input:focus{border-color:var(--teal); box-shadow:0 0 0 3px rgba(31,95,91,0.12); outline:none;}
+.input-wrap input.error{border-color:var(--error); box-shadow:0 0 0 3px rgba(179,66,58,0.1);}
+.toggle-pass{position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none;
+  font-size:12.5px; font-family:var(--font-mono); color:var(--muted); font-weight:600; padding:4px;}
+.toggle-pass:hover{color:var(--teal-dark);}
+.field-error{display:none; align-items:center; gap:6px; margin-top:7px; font-size:13px; color:var(--error);}
+.field-error.show{display:flex;}
+.field-error::before{content:'!'; width:15px;height:15px;border-radius:50%; background:var(--error); color:#fff; font-size:10.5px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.pw-hint{font-size:12.5px; color:var(--muted); margin-top:7px;}
+
+.terms-row{display:flex; align-items:flex-start; gap:10px; margin:22px 0; font-size:13.5px; color:var(--muted);}
+.terms-row input{margin-top:3px;}
+
+.form-alert{display:none; align-items:flex-start; gap:10px; background:var(--error-bg); border:1px solid rgba(179,66,58,0.25);
+  color:var(--error); padding:13px 14px; border-radius:10px; font-size:13.5px; margin-bottom:20px;}
+.form-alert.show{display:flex;}
+.form-alert strong{display:block; margin-bottom:2px; font-size:14px;}
+
+.btn-submit{width:100%; padding:15px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center; gap:10px;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px); box-shadow:0 14px 30px -12px rgba(31,95,91,0.55);}
+.btn-submit:disabled{opacity:0.75; cursor:not-allowed;}
+.spinner{width:16px;height:16px;border-radius:50%; border:2px solid rgba(255,255,255,0.35); border-top-color:#fff; display:none; animation:spin .7s linear infinite;}
+.btn-submit.loading .spinner{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.form-view.hidden, .success-view{display:none;}
+.success-view.show{display:block; text-align:center;}
+.success-icon{width:64px;height:64px;border-radius:50%; background:rgba(87,217,163,0.15); color:var(--teal);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 20px; font-size:28px;}
+.success-view h2{font-size:22px; font-weight:600;}
+.success-view p{color:var(--muted); font-size:14.5px; margin-top:10px;}
+.success-view .btn-submit{margin-top:24px; text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div style="text-align:center;"><span class="status-badge"><span class="dot"></span>Pagamento confirmado</span></div>
+
+  <div class="form-view" id="formView">
+    <div class="head">
+      <h1 data-key="cad-title">Seu acesso foi liberado 🎉</h1>
+      <p data-key="cad-sub">Crie sua senha para ativar o acesso à plataforma.</p>
+    </div>
+
+    <div class="locked-field">
+      <span>E-mail cadastrado</span>
+      <strong id="lockedEmail">aluno@email.com</strong>
+    </div>
+
+    <div class="form-alert" id="formAlert">
+      <div><strong id="formAlertTitle">Verifique os campos destacados</strong><span id="formAlertBody">Alguns campos precisam de atenção.</span></div>
+    </div>
+
+    <form id="cadastroForm" novalidate>
+      <div class="field">
+        <label for="nome">Nome completo <span class="required">*</span></label>
+        <div class="input-wrap"><input type="text" id="nome" name="nome" placeholder="Seu nome completo" autocomplete="name"></div>
+        <div class="field-error" id="nomeError">O nome completo é obrigatório.</div>
+      </div>
+
+      <div class="field">
+        <label for="senha">Criar senha <span class="required">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="senha" name="senha" placeholder="Mínimo de 8 caracteres" autocomplete="new-password">
+          <button type="button" class="toggle-pass" id="toggleSenha">MOSTRAR</button>
+        </div>
+        <div class="pw-hint">Use pelo menos 8 caracteres.</div>
+        <div class="field-error" id="senhaError">A senha precisa ter no mínimo 8 caracteres.</div>
+      </div>
+
+      <div class="field">
+        <label for="confirmaSenha">Confirmar senha <span class="required">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="confirmaSenha" name="confirmaSenha" placeholder="Repita a senha" autocomplete="new-password">
+        </div>
+        <div class="field-error" id="confirmaSenhaError">As senhas não coincidem.</div>
+      </div>
+
+      <div class="terms-row">
+        <input type="checkbox" id="termos" name="termos">
+        <label for="termos">Li e aceito os termos de uso e a política de privacidade.</label>
+      </div>
+      <div class="field-error" id="termosError" style="margin-top:-10px; margin-bottom:16px;">É necessário aceitar os termos para continuar.</div>
+
+      <button type="submit" class="btn-submit" id="submitBtn">
+        <span class="spinner"></span>
+        <span class="btn-label">Ativar meu acesso</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="success-view" id="successView">
+    <div class="success-icon">✓</div>
+    <h2 data-key="cad-success-title">Cadastro ativado!</h2>
+    <p data-key="cad-success-body">Sua senha foi criada com sucesso. Agora você já pode entrar na plataforma com seu e-mail e senha.</p>
+    <a href="login.html" class="btn-submit">Ir para o login</a>
+  </div>
+</div>
+
+<script>
+// E-mail exibido a partir do parâmetro ?email= (enviado no link de liberação) — placeholder para demonstração.
+const params = new URLSearchParams(window.location.search);
+document.getElementById('lockedEmail').textContent = params.get('email') || 'aluno@email.com';
+
+const form = document.getElementById('cadastroForm');
+const nomeInput = document.getElementById('nome');
+const senhaInput = document.getElementById('senha');
+const confirmaInput = document.getElementById('confirmaSenha');
+const termosInput = document.getElementById('termos');
+const submitBtn = document.getElementById('submitBtn');
+const formAlert = document.getElementById('formAlert');
+const toggleSenha = document.getElementById('toggleSenha');
+
+toggleSenha.addEventListener('click', () => {
+  const isPass = senhaInput.type === 'password';
+  senhaInput.type = isPass ? 'text' : 'password';
+  toggleSenha.textContent = isPass ? 'OCULTAR' : 'MOSTRAR';
+});
+
+function clearErrors(){
+  [nomeInput, senhaInput, confirmaInput].forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show'));
+  formAlert.classList.remove('show');
+}
+
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  clearErrors();
+  let hasError = false;
+
+  if (!nomeInput.value.trim()){
+    nomeInput.classList.add('error');
+    document.getElementById('nomeError').classList.add('show');
+    hasError = true;
+  }
+  if (!senhaInput.value || senhaInput.value.length < 8){
+    senhaInput.classList.add('error');
+    document.getElementById('senhaError').classList.add('show');
+    hasError = true;
+  }
+  if (!confirmaInput.value || confirmaInput.value !== senhaInput.value){
+    confirmaInput.classList.add('error');
+    document.getElementById('confirmaSenhaError').classList.add('show');
+    hasError = true;
+  }
+  if (!termosInput.checked){
+    document.getElementById('termosError').classList.add('show');
+    hasError = true;
+  }
+
+  if (hasError){
+    document.getElementById('formAlertTitle').textContent = 'Verifique os campos destacados';
+    document.getElementById('formAlertBody').textContent = 'Alguns campos precisam de atenção antes de continuar.';
+    formAlert.classList.add('show');
+    return;
+  }
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  // Placeholder de ativação — integrar com o backend/plataforma real do curso.
+  setTimeout(() => {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    document.getElementById('formView').classList.add('hidden');
+    document.getElementById('successView').classList.add('show');
+  }, 1200);
+});
+
+[nomeInput, senhaInput, confirmaInput].forEach(el => el.addEventListener('input', () => el.classList.remove('error')));
+termosInput.addEventListener('change', () => document.getElementById('termosError').classList.remove('show'));
+</script>
+</body>
+</html>
