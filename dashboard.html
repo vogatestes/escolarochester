@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --radius:16px; --radius-lg:26px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:var(--font-body); color:var(--text); background:var(--paper); min-height:100vh;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:26px 40px;}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:18px;}
+.brand .dot{color:var(--gold); font-size:22px; line-height:0;}
+.logout-link{font-size:13.5px; font-weight:600; color:var(--muted);}
+.logout-link:hover{color:var(--ink);}
+
+.wrap{max-width:620px; margin:0 auto; padding:20px 24px 80px;}
+.greeting{font-size:clamp(24px,3.6vw,32px); font-weight:600; margin-bottom:34px;}
+
+.course-card{
+  display:block; background:var(--ink); color:#fff; border-radius:var(--radius-lg); padding:36px 34px;
+  position:relative; overflow:hidden; transition:transform .18s ease, box-shadow .18s ease;
+}
+.course-card:hover{transform:translateY(-4px); box-shadow:0 30px 60px -25px rgba(18,22,42,0.55);}
+.course-card::before{
+  content:''; position:absolute; top:-30%; right:-15%; width:260px;height:260px;border-radius:50%;
+  background:radial-gradient(circle, rgba(184,145,43,0.25), transparent 70%);
+}
+.course-card .tag{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-soft); position:relative;}
+.course-card h2{color:#fff; font-size:24px; font-weight:600; margin-top:12px; position:relative;}
+.course-card .mod-label{font-size:14px; color:rgba(247,244,236,0.6); margin-top:4px; position:relative;}
+
+.progress-block{margin-top:28px; position:relative;}
+.progress-block .plabel{font-size:13px; color:rgba(247,244,236,0.65); margin-bottom:10px;}
+.ascii-bar{font-family:var(--font-mono); font-size:17px; letter-spacing:1px; color:#57D9A3; display:flex; align-items:baseline; gap:10px;}
+.ascii-bar .pct-num{color:#fff; font-size:14px; font-weight:600;}
+.progress-caption{font-size:13.5px; color:rgba(247,244,236,0.75); margin-top:8px;}
+
+.continue-cta{
+  margin-top:26px; display:inline-flex; align-items:center; gap:8px; background:var(--teal); color:#fff;
+  padding:13px 22px; border-radius:999px; font-weight:700; font-size:14.5px; position:relative;
+}
+
+@media (max-width:560px){
+  .topbar{padding:20px 22px;}
+  .wrap{padding:10px 20px 60px;}
+  .course-card{padding:28px 24px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot">•</span>Nome do Curso</div>
+  <a href="index.html" class="logout-link">Sair</a>
+</div>
+
+<div class="wrap">
+  <h1 class="greeting">Olá, <span id="greetingName">Nome do Aluno</span>! 👋</h1>
+
+  <a href="curso.html?modulo=mod-1" id="courseLink" class="course-card">
+    <span class="tag">Meu Curso</span>
+    <h2 id="courseName">Nome do Curso</h2>
+    <div class="mod-label" id="modLabel">Módulo 1</div>
+
+    <div class="progress-block">
+      <div class="plabel">Seu progresso</div>
+      <div class="ascii-bar"><span id="asciiBar">████████░░</span><span class="pct-num" id="pctLabel">80%</span></div>
+      <div class="progress-caption" id="pctCaption">80% concluído</div>
+    </div>
+
+    <div class="continue-cta">Continuar estudando →</div>
+  </a>
+</div>
+
+<script>
+/* ============ MODELO DE DADOS ============
+   Aluno -> possui uma Matrícula -> vinculada a um Curso -> que possui Módulos -> que possuem Matérias
+   Aluno possui Progresso individual em cada Matéria (fonte única de verdade; tudo acima é calculado a partir daqui). */
+const ALUNO = { id:'aluno-1', nome:'Nome do Aluno', email:'aluno@email.com' };
+
+const DEFAULT_CURSO_ESTRUTURA = {
+  id:'curso-1', nome:'Nome do Curso',
+  modulos:[
+    { id:'mod-1', nome:'Fundamentos', materias:[
+        { id:'mod-1-mat-1', nome:'Introdução e visão geral', aulas:[ { id:'mod-1-mat-1-aula-1', nome:'Aula 1', duracao:'08 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-1-mat-2', nome:'Conceitos essenciais', aulas:[ { id:'mod-1-mat-2-aula-1', nome:'Aula 1', duracao:'14 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-1-mat-3', nome:'Ferramentas utilizadas no curso', aulas:[ { id:'mod-1-mat-3-aula-1', nome:'Aula 1', duracao:'10 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-1-mat-4', nome:'Exercício prático de fixação', aulas:[ { id:'mod-1-mat-4-aula-1', nome:'Aula 1', duracao:'12 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]}
+    ]},
+    { id:'mod-2', nome:'Ferramentas e prática', materias:[
+        { id:'mod-2-mat-1', nome:'Configuração do ambiente/ferramentas', aulas:[ { id:'mod-2-mat-1-aula-1', nome:'Aula 1', duracao:'09 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-2-mat-2', nome:'Prática guiada', aulas:[ { id:'mod-2-mat-2-aula-1', nome:'Aula 1', duracao:'16 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-2-mat-3', nome:'Estudo de caso', aulas:[ { id:'mod-2-mat-3-aula-1', nome:'Aula 1', duracao:'11 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-2-mat-4', nome:'Erros comuns e como evitá-los', aulas:[ { id:'mod-2-mat-4-aula-1', nome:'Aula 1', duracao:'07 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-2-mat-5', nome:'Exercício prático', aulas:[ { id:'mod-2-mat-5-aula-1', nome:'Aula 1', duracao:'13 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]}
+    ]},
+    { id:'mod-3', nome:'Projeto aplicado', materias:[
+        { id:'mod-3-mat-1', nome:'Planejamento do projeto', aulas:[ { id:'mod-3-mat-1-aula-1', nome:'Aula 1', duracao:'10 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-3-mat-2', nome:'Desenvolvimento — parte 1', aulas:[ { id:'mod-3-mat-2-aula-1', nome:'Aula 1', duracao:'18 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-3-mat-3', nome:'Desenvolvimento — parte 2', aulas:[ { id:'mod-3-mat-3-aula-1', nome:'Aula 1', duracao:'18 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-3-mat-4', nome:'Revisão e ajustes finais', aulas:[ { id:'mod-3-mat-4-aula-1', nome:'Aula 1', duracao:'09 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]}
+    ]},
+    { id:'mod-4', nome:'Avançado', materias:[
+        { id:'mod-4-mat-1', nome:'Tópico avançado 1', aulas:[ { id:'mod-4-mat-1-aula-1', nome:'Aula 1', duracao:'14 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-4-mat-2', nome:'Tópico avançado 2', aulas:[ { id:'mod-4-mat-2-aula-1', nome:'Aula 1', duracao:'14 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-4-mat-3', nome:'Tópico avançado 3', aulas:[ { id:'mod-4-mat-3-aula-1', nome:'Aula 1', duracao:'15 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-4-mat-4', nome:'Boas práticas de mercado', aulas:[ { id:'mod-4-mat-4-aula-1', nome:'Aula 1', duracao:'11 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]},
+        { id:'mod-4-mat-5', nome:'Exercício prático', aulas:[ { id:'mod-4-mat-5-aula-1', nome:'Aula 1', duracao:'12 min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]}
+    ]},
+    { id:'mod-5', nome:'[Nome do módulo 5]', materias:[
+        { id:'mod-5-mat-1', nome:'[Matéria a definir]', aulas:[ { id:'mod-5-mat-1-aula-1', nome:'[Aula a definir]', duracao:'— min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]}
+    ]},
+    { id:'mod-6', nome:'[Nome do módulo 6]', materias:[
+        { id:'mod-6-mat-1', nome:'[Matéria a definir]', aulas:[ { id:'mod-6-mat-1-aula-1', nome:'[Aula a definir]', duracao:'— min', descricao:'', videoUrl:'', apostilaUrl:'', slidesUrl:'' } ]}
+    ]}
+  ]
+};
+
+const MATRICULA = { id:'matricula-1', alunoId:ALUNO.id, cursoId:DEFAULT_CURSO_ESTRUTURA.id, acessoValidoMeses:18 };
+
+// Progresso padrão de demonstração (0-100 por AULA) — usado apenas para semear o storage na primeira visita.
+const DEFAULT_PROGRESS = {
+  'mod-1-mat-1-aula-1':80, 'mod-1-mat-2-aula-1':45, 'mod-1-mat-3-aula-1':100, 'mod-1-mat-4-aula-1':0,
+  'mod-2-mat-1-aula-1':100, 'mod-2-mat-2-aula-1':20, 'mod-2-mat-3-aula-1':0, 'mod-2-mat-4-aula-1':0, 'mod-2-mat-5-aula-1':0,
+  'mod-3-mat-1-aula-1':0, 'mod-3-mat-2-aula-1':0, 'mod-3-mat-3-aula-1':0, 'mod-3-mat-4-aula-1':0,
+  'mod-4-mat-1-aula-1':0, 'mod-4-mat-2-aula-1':0, 'mod-4-mat-3-aula-1':0, 'mod-4-mat-4-aula-1':0, 'mod-4-mat-5-aula-1':0,
+  'mod-5-mat-1-aula-1':0,
+  'mod-6-mat-1-aula-1':0
+};
+
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+
+// Identifica o aluno logado via ?aluno= na URL (definido no login). Sem esse parâmetro, cai num aluno de demonstração.
+const ALUNO_ID = new URLSearchParams(window.location.search).get('aluno') || 'aluno-demo';
+
+async function loadProgress(){
+  const stored = await storageGet('progresso_aulas__' + ALUNO_ID, true);
+  if (stored){
+    try { return JSON.parse(stored); } catch(e){ /* dado corrompido, cai para o padrão */ }
+  }
+  await storageSet('progresso_aulas__' + ALUNO_ID, JSON.stringify(DEFAULT_PROGRESS), true);
+  return { ...DEFAULT_PROGRESS };
+}
+
+async function loadCursoEstrutura(){
+  const stored = await storageGet('curso_estrutura', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido, cai para o padrão */ } }
+  await storageSet('curso_estrutura', JSON.stringify(DEFAULT_CURSO_ESTRUTURA), true);
+  return JSON.parse(JSON.stringify(DEFAULT_CURSO_ESTRUTURA));
+}
+
+async function loadAlunoNome(){
+  const stored = await storageGet('alunos', true);
+  if (stored){
+    try {
+      const alunos = JSON.parse(stored);
+      const a = alunos.find(x => x.id === ALUNO_ID);
+      if (a) return a.nome;
+    } catch(e){ /* dado corrompido */ }
+  }
+  return ALUNO.nome;
+}
+
+async function initPage(){
+  const CURSO = await loadCursoEstrutura();
+  document.getElementById('greetingName').textContent = await loadAlunoNome();
+  document.getElementById('courseName').textContent = CURSO.nome;
+
+  const progress = await loadProgress();
+
+  function pctAula(aula){ return progress[aula.id] || 0; }
+  function pctMateria(mat){ return Math.round(mat.aulas.reduce((sum, a) => sum + pctAula(a), 0) / mat.aulas.length); }
+  function pctModulo(mod){ return Math.round(mod.materias.reduce((sum, mat) => sum + pctMateria(mat), 0) / mod.materias.length); }
+
+  // Progresso de cada módulo = média do progresso das suas matérias (que por sua vez é a média das suas aulas).
+  const modulosComProgresso = CURSO.modulos.map(mod => ({ ...mod, pct: pctModulo(mod) }));
+
+  // Progresso geral do curso = média de todos os módulos.
+  const cursoPct = Math.round(modulosComProgresso.reduce((sum, m) => sum + m.pct, 0) / modulosComProgresso.length);
+
+  // Módulo atual = o último módulo, em ordem, que já tem algum progresso (ou o primeiro, se nenhum foi iniciado).
+  let atual = modulosComProgresso[0];
+  modulosComProgresso.forEach(m => { if (m.pct > 0) atual = m; });
+
+  document.getElementById('modLabel').textContent = atual.nome;
+  document.getElementById('courseLink').href = 'curso.html?modulo=' + atual.id + '&aluno=' + encodeURIComponent(ALUNO_ID);
+
+  const totalBlocks = 10;
+  const filled = Math.round((cursoPct / 100) * totalBlocks);
+  document.getElementById('asciiBar').textContent = '█'.repeat(filled) + '░'.repeat(totalBlocks - filled);
+  document.getElementById('pctLabel').textContent = cursoPct + '%';
+  document.getElementById('pctCaption').textContent = cursoPct + '% concluído';
+}
+initPage();
+</script>
+</body>
+</html>

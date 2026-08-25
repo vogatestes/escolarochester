@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acompanhamento dos alunos — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA;
+  --radius:14px; --radius-lg:22px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:var(--font-body); color:var(--text); background:var(--paper); min-height:100vh;}
+h1,h2,h3{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:26px 40px;}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:18px;}
+.brand .dot{color:var(--gold); font-size:22px; line-height:0;}
+.back-link{font-size:13.5px; font-weight:600; color:var(--muted);}
+.back-link:hover{color:var(--ink);}
+
+.wrap{max-width:920px; margin:0 auto; padding:10px 24px 80px;}
+.page-head h1{font-size:26px; font-weight:600;}
+.page-head p{color:var(--muted); font-size:14.5px; margin-top:8px; margin-bottom:30px;}
+
+.student-list{display:flex; flex-direction:column; gap:14px;}
+.student-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden;}
+.student-head{display:flex; align-items:center; gap:16px; padding:20px 22px; width:100%; background:none; border:none; text-align:left;}
+.student-avatar{width:40px;height:40px;border-radius:50%; background:var(--gold-soft); color:var(--ink); font-weight:700; font-size:14px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.student-info{flex:1;}
+.student-info .sname{font-size:15.5px; font-weight:600; color:var(--ink);}
+.student-info .semail{font-size:12.5px; color:var(--muted); margin-top:2px;}
+.student-overview{display:flex; align-items:center; gap:18px;}
+.mini-bar-wrap{display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
+.mini-bar-track{width:110px; height:6px; border-radius:999px; background:var(--paper-2); overflow:hidden;}
+.mini-bar-fill{height:100%; background:var(--teal); border-radius:999px;}
+.mini-pct{font-family:var(--font-mono); font-size:11.5px; color:var(--muted);}
+.avg-badge{font-family:var(--font-mono); font-size:11.5px; padding:5px 10px; border-radius:999px; font-weight:600; white-space:nowrap;}
+.avg-badge.pass{background:rgba(87,217,163,0.15); color:var(--teal-dark);}
+.avg-badge.fail{background:var(--error-bg); color:var(--error);}
+.avg-badge.none{background:var(--paper-2); color:var(--muted);}
+.chevron{width:18px;height:18px; color:var(--muted); transition:transform .2s ease; flex-shrink:0;}
+.student-card.open .chevron{transform:rotate(180deg);}
+
+.student-body{max-height:0; overflow:hidden; transition:max-height .3s ease;}
+.student-body-in{padding:0 22px 22px; border-top:1px solid var(--line);}
+
+.mod-row{padding:16px 0; border-bottom:1px dashed var(--line);}
+.mod-row:last-child{border-bottom:none;}
+.mod-row-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.mod-row-head strong{font-size:14px; color:var(--ink); font-weight:600;}
+.mod-row-head span{font-family:var(--font-mono); font-size:12px; color:var(--muted);}
+.mat-line{display:flex; align-items:center; gap:10px; padding:6px 0; font-size:13px; color:var(--text);}
+.mat-line .mat-name{flex:1;}
+.mat-line .mat-bar-track{width:80px; height:5px; border-radius:999px; background:var(--paper-2); overflow:hidden;}
+.mat-line .mat-bar-fill{height:100%; background:var(--teal); border-radius:999px;}
+.mat-line .mat-pct{font-family:var(--font-mono); font-size:11px; color:var(--muted); width:36px; text-align:right;}
+.mat-line .mat-nota{font-family:var(--font-mono); font-size:11px; padding:2px 8px; border-radius:999px; white-space:nowrap;}
+.mat-line .mat-nota.pass{background:rgba(87,217,163,0.15); color:var(--teal-dark);}
+.mat-line .mat-nota.fail{background:var(--error-bg); color:var(--error);}
+
+.empty-note{color:var(--muted); font-size:14px; padding:40px 0; text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot">•</span>Nome do Curso</div>
+  <a href="#" id="backLink" class="back-link">← Voltar ao meu painel</a>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <h1>Acompanhamento dos alunos</h1>
+    <p>Progresso por módulo e matéria, e notas das provas de cada aluno. Média para aprovação: <strong>7,0</strong>.</p>
+  </div>
+  <div class="student-list" id="studentList"></div>
+</div>
+
+<script>
+/* ============ MODELO DE DADOS ============
+   Curso -> Módulos -> Matérias (até 8 por módulo) -> Aulas (até 12 por matéria)
+   Aluno possui Progresso individual em cada Aula, e Notas em cada Prova vinculada a uma Matéria. */
+const DEFAULT_CURSO_ESTRUTURA = {
+  id:'curso-1', nome:'Nome do Curso',
+  modulos:[
+    { id:'mod-1', nome:'Fundamentos', materias:[
+        { id:'mod-1-mat-1', nome:'Introdução e visão geral', aulas:[ { id:'mod-1-mat-1-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-1-mat-2', nome:'Conceitos essenciais', aulas:[ { id:'mod-1-mat-2-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-1-mat-3', nome:'Ferramentas utilizadas no curso', aulas:[ { id:'mod-1-mat-3-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-1-mat-4', nome:'Exercício prático de fixação', aulas:[ { id:'mod-1-mat-4-aula-1', nome:'Aula 1' } ]}
+    ]},
+    { id:'mod-2', nome:'Ferramentas e prática', materias:[
+        { id:'mod-2-mat-1', nome:'Configuração do ambiente/ferramentas', aulas:[ { id:'mod-2-mat-1-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-2-mat-2', nome:'Prática guiada', aulas:[ { id:'mod-2-mat-2-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-2-mat-3', nome:'Estudo de caso', aulas:[ { id:'mod-2-mat-3-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-2-mat-4', nome:'Erros comuns e como evitá-los', aulas:[ { id:'mod-2-mat-4-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-2-mat-5', nome:'Exercício prático', aulas:[ { id:'mod-2-mat-5-aula-1', nome:'Aula 1' } ]}
+    ]},
+    { id:'mod-3', nome:'Projeto aplicado', materias:[
+        { id:'mod-3-mat-1', nome:'Planejamento do projeto', aulas:[ { id:'mod-3-mat-1-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-3-mat-2', nome:'Desenvolvimento — parte 1', aulas:[ { id:'mod-3-mat-2-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-3-mat-3', nome:'Desenvolvimento — parte 2', aulas:[ { id:'mod-3-mat-3-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-3-mat-4', nome:'Revisão e ajustes finais', aulas:[ { id:'mod-3-mat-4-aula-1', nome:'Aula 1' } ]}
+    ]},
+    { id:'mod-4', nome:'Avançado', materias:[
+        { id:'mod-4-mat-1', nome:'Tópico avançado 1', aulas:[ { id:'mod-4-mat-1-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-4-mat-2', nome:'Tópico avançado 2', aulas:[ { id:'mod-4-mat-2-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-4-mat-3', nome:'Tópico avançado 3', aulas:[ { id:'mod-4-mat-3-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-4-mat-4', nome:'Boas práticas de mercado', aulas:[ { id:'mod-4-mat-4-aula-1', nome:'Aula 1' } ]},
+        { id:'mod-4-mat-5', nome:'Exercício prático', aulas:[ { id:'mod-4-mat-5-aula-1', nome:'Aula 1' } ]}
+    ]},
+    { id:'mod-5', nome:'[Nome do módulo 5]', materias:[
+        { id:'mod-5-mat-1', nome:'[Matéria a definir]', aulas:[ { id:'mod-5-mat-1-aula-1', nome:'[Aula a definir]' } ]}
+    ]},
+    { id:'mod-6', nome:'[Nome do módulo 6]', materias:[
+        { id:'mod-6-mat-1', nome:'[Matéria a definir]', aulas:[ { id:'mod-6-mat-1-aula-1', nome:'[Aula a definir]' } ]}
+    ]}
+  ]
+};
+
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+async function loadCursoEstrutura(){
+  const stored = await storageGet('curso_estrutura', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido, cai para o padrão */ } }
+  await storageSet('curso_estrutura', JSON.stringify(DEFAULT_CURSO_ESTRUTURA), true);
+  return JSON.parse(JSON.stringify(DEFAULT_CURSO_ESTRUTURA));
+}
+async function loadAlunos(){
+  const stored = await storageGet('alunos', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+async function loadProgressoAluno(alunoId){
+  const stored = await storageGet('progresso_aulas__' + alunoId, true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return {};
+}
+async function loadProvas(){
+  const stored = await storageGet('provas', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+async function loadRespostasAluno(alunoId){
+  const stored = await storageGet('provas_respondidas__' + alunoId, true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return {};
+}
+
+function initials(nome){
+  return (nome || '?').trim().split(/\s+/).slice(0,2).map(p => p[0].toUpperCase()).join('');
+}
+
+const params = new URLSearchParams(window.location.search);
+const professorId = params.get('professor') || '';
+document.getElementById('backLink').href = 'professor-dashboard.html?id=' + encodeURIComponent(professorId);
+
+async function init(){
+  const CURSO = await loadCursoEstrutura();
+  const alunos = await loadAlunos();
+  const provas = await loadProvas();
+  const list = document.getElementById('studentList');
+
+  if (alunos.length === 0){
+    list.innerHTML = '<div class="empty-note">Nenhum aluno cadastrado ainda. Assim que alguém se cadastrar ou entrar pela tela de login, aparece aqui.</div>';
+    return;
+  }
+
+  for (const aluno of alunos){
+    const progress = await loadProgressoAluno(aluno.id);
+    const respostas = await loadRespostasAluno(aluno.id);
+
+    function pctAula(aula){ return progress[aula.id] || 0; }
+    function pctMateria(mat){ return Math.round(mat.aulas.reduce((sum, a) => sum + pctAula(a), 0) / mat.aulas.length); }
+    function pctModulo(mod){ return Math.round(mod.materias.reduce((sum, mat) => sum + pctMateria(mat), 0) / mod.materias.length); }
+
+    const modulosComPct = CURSO.modulos.map(mod => ({ ...mod, pct: pctModulo(mod) }));
+    const cursoPct = Math.round(modulosComPct.reduce((sum, m) => sum + m.pct, 0) / modulosComPct.length);
+
+    // Notas de provas deste aluno, uma por matéria (quando existir prova + resposta).
+    const notasPorMateria = {};
+    provas.forEach(p => {
+      const resp = respostas[p.id];
+      if (resp) notasPorMateria[p.materiaId] = resp.nota;
+    });
+    const notas = Object.values(notasPorMateria);
+    const mediaGeral = notas.length ? Math.round(notas.reduce((s,n) => s+n, 0) / notas.length) : null;
+
+    const card = document.createElement('div');
+    card.className = 'student-card';
+
+    let bodyHtml = '';
+    modulosComPct.forEach(mod => {
+      bodyHtml += '<div class="mod-row"><div class="mod-row-head"><strong>' + mod.nome + '</strong><span>' + mod.pct + '% concluído</span></div>';
+      mod.materias.forEach(mat => {
+        const matPct = pctMateria(mat);
+        const nota = notasPorMateria[mat.id];
+        let notaHtml = '';
+        if (nota !== undefined){
+          const notaDecimal = (nota / 10).toFixed(1);
+          notaHtml = '<span class="mat-nota ' + (nota >= 70 ? 'pass' : 'fail') + '">' + notaDecimal + '/10</span>';
+        }
+        bodyHtml += '<div class="mat-line">' +
+          '<span class="mat-name">' + mat.nome + '</span>' +
+          '<span class="mat-bar-track"><span class="mat-bar-fill" style="width:' + matPct + '%;"></span></span>' +
+          '<span class="mat-pct">' + matPct + '%</span>' +
+          notaHtml +
+          '</div>';
+      });
+      bodyHtml += '</div>';
+    });
+
+    const avgBadge = mediaGeral === null
+      ? '<span class="avg-badge none">Sem provas</span>'
+      : '<span class="avg-badge ' + (mediaGeral >= 70 ? 'pass' : 'fail') + '">Média: ' + (mediaGeral/10).toFixed(1) + '/10</span>';
+
+    card.innerHTML =
+      '<button class="student-head" type="button">' +
+        '<div class="student-avatar">' + initials(aluno.nome) + '</div>' +
+        '<div class="student-info"><div class="sname">' + aluno.nome + '</div><div class="semail">' + aluno.email + '</div></div>' +
+        '<div class="student-overview">' +
+          '<div class="mini-bar-wrap"><div class="mini-bar-track"><div class="mini-bar-fill" style="width:' + cursoPct + '%;"></div></div><span class="mini-pct">' + cursoPct + '% do curso</span></div>' +
+          avgBadge +
+        '</div>' +
+        '<svg class="chevron" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '</button>' +
+      '<div class="student-body"><div class="student-body-in">' + bodyHtml + '</div></div>';
+
+    list.appendChild(card);
+
+    const head = card.querySelector('.student-head');
+    const body = card.querySelector('.student-body');
+    head.addEventListener('click', () => {
+      const wasOpen = card.classList.contains('open');
+      document.querySelectorAll('.student-card').forEach(c => { c.classList.remove('open'); c.querySelector('.student-body').style.maxHeight = null; });
+      if (!wasOpen){
+        card.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  }
+}
+init();
+</script>
+</body>
+</html>

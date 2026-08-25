@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prova — Nome do Curso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12162A; --paper:#F7F4EC; --paper-2:#EDE7D6;
+  --gold:#B8912B; --gold-soft:#D9BC6E; --teal:#1F5F5B; --teal-dark:#12403D;
+  --text:#22263D; --muted:#666B80; --line:rgba(18,22,42,0.13); --line-strong:rgba(18,22,42,0.22);
+  --error:#B3423A; --error-bg:#FBEBEA;
+  --radius:14px; --radius-lg:22px;
+  --font-display:'Fraunces', serif; --font-body:'Inter', sans-serif; --font-mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0; font-family:var(--font-body); color:var(--text); background:var(--paper); min-height:100vh;}
+h1,h2{font-family:var(--font-display); margin:0; color:var(--ink);}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:26px 40px;}
+.brand{display:flex; align-items:center; gap:8px; font-family:var(--font-display); font-weight:600; font-size:18px;}
+.brand .dot{color:var(--gold); font-size:22px; line-height:0;}
+.back-link{font-size:13.5px; font-weight:600; color:var(--muted);}
+.back-link:hover{color:var(--ink);}
+
+.wrap{max-width:640px; margin:0 auto; padding:10px 24px 100px;}
+.prova-header{margin-bottom:10px;}
+.prova-header .eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--teal-dark); font-weight:600;}
+.prova-header h1{font-size:24px; font-weight:600; margin-top:8px;}
+.prova-header p{color:var(--muted); font-size:14px; margin-top:6px;}
+
+.form-alert{display:none; align-items:flex-start; gap:10px; background:var(--error-bg); border:1px solid rgba(179,66,58,0.25);
+  color:var(--error); padding:13px 14px; border-radius:10px; font-size:13.5px; margin:20px 0;}
+.form-alert.show{display:flex;}
+
+.question-card{background:#fff; border:1px solid var(--line); border-radius:var(--radius-lg); padding:22px 24px; margin:20px 0;}
+.question-card .qnum{font-family:var(--font-mono); font-size:12px; color:var(--teal-dark); font-weight:600;}
+.question-card .qtext{font-size:15.5px; font-weight:600; color:var(--ink); margin-top:8px; margin-bottom:16px;}
+.alt-option{display:flex; align-items:center; gap:12px; padding:12px 14px; border:1.5px solid var(--line); border-radius:10px; margin-bottom:8px; cursor:pointer; transition:.15s ease;}
+.alt-option:hover{border-color:var(--line-strong);}
+.alt-option input{width:17px;height:17px; accent-color:var(--teal); flex-shrink:0;}
+.alt-option.selected{border-color:var(--teal); background:rgba(31,95,91,0.06);}
+.alt-option span{font-size:14.5px;}
+
+.btn-submit{width:100%; padding:16px; border:none; border-radius:10px; background:var(--teal); color:#fff;
+  font-weight:700; font-size:15.5px; margin-top:12px;}
+.btn-submit:hover{transform:translateY(-2px);}
+
+.result-view{display:none; text-align:center; padding:40px 20px;}
+.result-view.show{display:block;}
+.result-score{font-family:var(--font-display); font-size:56px; font-weight:600; color:var(--ink); margin:20px 0 6px;}
+.result-score span{font-size:24px; color:var(--muted);}
+.result-label{color:var(--muted); font-size:14.5px;}
+.result-actions{display:flex; gap:12px; justify-content:center; margin-top:28px; flex-wrap:wrap;}
+.result-actions a, .result-actions button{
+  padding:12px 22px; border-radius:999px; font-weight:700; font-size:14px; border:1.5px solid var(--line-strong); background:#fff; color:var(--text);
+}
+.result-actions .primary{background:var(--teal); border-color:var(--teal); color:#fff;}
+
+.already-note{background:var(--paper-2); border-radius:10px; padding:14px 16px; font-size:13.5px; color:var(--muted); margin-bottom:20px;}
+.already-note strong{color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot">•</span>Nome do Curso</div>
+  <a href="curso.html" class="back-link" id="backToCurso">← Voltar ao curso</a>
+</div>
+
+<div class="wrap">
+  <div class="prova-header">
+    <span class="eyebrow">Prova</span>
+    <h1 id="provaTitulo">Carregando prova...</h1>
+    <p id="provaMeta"></p>
+  </div>
+
+  <div class="form-alert" id="formAlert">Responda todas as perguntas antes de enviar.</div>
+
+  <div id="alreadyNote" style="display:none;" class="already-note">
+    Você já respondeu esta prova. Sua última nota foi <strong id="notaAnterior"></strong>.
+  </div>
+
+  <form id="provaForm"></form>
+  <button type="button" class="btn-submit" id="submitBtn">Enviar prova</button>
+
+  <div class="result-view" id="resultView">
+    <div class="prova-header"><span class="eyebrow">Resultado</span></div>
+    <div class="result-score" id="resultScore">0<span>/100</span></div>
+    <div class="result-label" id="resultLabel">acertos</div>
+    <div class="result-actions">
+      <button id="retryBtn">Refazer prova</button>
+      <a href="curso.html" class="primary" id="backToCurso2">Voltar ao curso</a>
+    </div>
+  </div>
+</div>
+
+<script>
+async function storageGet(key, shared){
+  if (window.storage){
+    try { const res = await window.storage.get(key, shared); return res ? res.value : null; }
+    catch(e){ return null; }
+  }
+  try { return localStorage.getItem((shared ? 'shared:' : 'user:') + key); } catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if (window.storage){
+    try { await window.storage.set(key, value, shared); return; } catch(e){ /* cai para localStorage abaixo */ }
+  }
+  try { localStorage.setItem((shared ? 'shared:' : 'user:') + key, value); } catch(e){ /* ambiente sem storage disponível */ }
+}
+async function loadProvas(){
+  const stored = await storageGet('provas', true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return [];
+}
+async function loadRespostas(alunoId){
+  const stored = await storageGet('provas_respondidas__' + alunoId, true);
+  if (stored){ try { return JSON.parse(stored); } catch(e){ /* dado corrompido */ } }
+  return {};
+}
+async function saveRespostas(alunoId, map){ await storageSet('provas_respondidas__' + alunoId, JSON.stringify(map), true); }
+
+const params = new URLSearchParams(window.location.search);
+const provaId = params.get('prova');
+const alunoId = params.get('aluno') || 'aluno-demo';
+const form = document.getElementById('provaForm');
+const submitBtn = document.getElementById('submitBtn');
+const resultView = document.getElementById('resultView');
+
+let provaAtual = null;
+
+async function init(){
+  document.getElementById('backToCurso').href = 'curso.html?aluno=' + encodeURIComponent(alunoId);
+  document.getElementById('backToCurso2').href = 'curso.html?aluno=' + encodeURIComponent(alunoId);
+  const provas = await loadProvas();
+  provaAtual = provas.find(p => p.id === provaId);
+
+  if (!provaAtual){
+    document.getElementById('provaTitulo').textContent = 'Prova não encontrada';
+    document.getElementById('provaMeta').textContent = 'Verifique se o link está correto.';
+    submitBtn.style.display = 'none';
+    return;
+  }
+
+  document.getElementById('provaTitulo').textContent = provaAtual.tituloProva;
+  document.getElementById('provaMeta').textContent = provaAtual.perguntas.length + ' pergunta(s) de múltipla escolha';
+
+  const respostas = await loadRespostas(alunoId);
+  const anterior = respostas[provaId];
+  if (anterior){
+    document.getElementById('alreadyNote').style.display = 'block';
+    const notaDecimal = (anterior.nota / 10).toFixed(1);
+    document.getElementById('notaAnterior').textContent = notaDecimal + '/10 (' + (anterior.nota >= 70 ? 'Aprovado' : 'Abaixo da média') + ')';
+  }
+
+  provaAtual.perguntas.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.dataset.qid = q.id;
+    card.innerHTML =
+      '<span class="qnum">Pergunta ' + (i + 1) + '</span>' +
+      '<div class="qtext">' + q.enunciado + '</div>' +
+      q.alternativas.map(alt =>
+        '<label class="alt-option"><input type="radio" name="resp-' + q.id + '" value="' + alt.id + '"><span>' + alt.texto + '</span></label>'
+      ).join('');
+    form.appendChild(card);
+  });
+
+  form.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const group = radio.closest('.question-card').querySelectorAll('.alt-option');
+      group.forEach(opt => opt.classList.remove('selected'));
+      radio.closest('.alt-option').classList.add('selected');
+    });
+  });
+}
+init();
+
+submitBtn.addEventListener('click', async () => {
+  if (!provaAtual) return;
+  const formAlert = document.getElementById('formAlert');
+  formAlert.classList.remove('show');
+
+  let acertos = 0;
+  const respostasAluno = {};
+  for (const q of provaAtual.perguntas){
+    const marcado = form.querySelector('input[name="resp-' + q.id + '"]:checked');
+    if (!marcado){
+      formAlert.classList.add('show');
+      return;
+    }
+    respostasAluno[q.id] = marcado.value;
+    if (marcado.value === q.corretaId) acertos++;
+  }
+
+  const nota = Math.round((acertos / provaAtual.perguntas.length) * 100);
+  const notaDecimal = (nota / 10).toFixed(1);
+  const aprovado = nota >= 70;
+
+  const respostas = await loadRespostas(alunoId);
+  respostas[provaId] = { nota, respostas: respostasAluno, data: new Date().toISOString() };
+  await saveRespostas(alunoId, respostas);
+
+  form.style.display = 'none';
+  submitBtn.style.display = 'none';
+  document.getElementById('alreadyNote').style.display = 'none';
+  resultView.classList.add('show');
+  document.getElementById('resultScore').innerHTML = notaDecimal + '<span>/10</span>';
+  document.getElementById('resultScore').style.color = aprovado ? 'var(--teal)' : '#B3423A';
+  document.getElementById('resultLabel').textContent = acertos + ' de ' + provaAtual.perguntas.length + ' pergunta(s) corretas · ' +
+    (aprovado ? 'Aprovado (média para aprovação: 7,0)' : 'Abaixo da média (7,0)');
+});
+
+document.getElementById('retryBtn').addEventListener('click', () => {
+  form.style.display = 'block';
+  submitBtn.style.display = 'block';
+  resultView.classList.remove('show');
+  form.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  form.querySelectorAll('.alt-option').forEach(o => o.classList.remove('selected'));
+});
+</script>
+</body>
+</html>
